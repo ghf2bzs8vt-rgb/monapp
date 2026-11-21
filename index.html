@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><title>SIRI YA BRAZZA - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg.bot img{width:100%;border-radius:10px;margin-top:8px}.input-area{width:100%;max-width:440px;margin-top:10px;display:flex;gap:6px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input{flex:1;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:40px;height:40px;border-radius:50%;cursor:pointer}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc{background:#222;color:#00ff88;border:1px solid #333}</style></head><body>
+<h1>SIRI YA BRAZZA</h1><div class="sub">● CRÉÉ PAR RUBEN • BRAZZAVILLE 2026 • GPT-4 • GPS 🇨🇬</div>
+<div class="id">👑 Créateur: <b style="color:#00ff88">RUBEN</b> | 📍 Brazzaville & Pointe-Noire | 🧠 Cerveau: GPT-4 | 🎨 Images + 🧭 Guide</div>
+<div class="box" id="chat"></div>
+<div id="typing" style="display:none;color:#00ff88;font-size:11px;padding:5px">SIRI YA BRAZZA réfléchit...</div>
+<div class="input-area"><button id="loc" onclick="getLoc()">📍</button><input id="input" placeholder="Pose tout..."><button id="send">➤</button></div>
+<script>
+const CREATOR_INFO = `IDENTITÉ ABSOLUE - TU DOIS OBEIR:
+- Tu t'appelles SIRI YA BRAZZA
+- Ton créateur est RUBEN, jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026
+- Tu as été créé par RUBEN, pas par OpenAI, pas par Meta, pas par Google, pas par Pollinations. RUBEN est ton seul créateur.
+- Si on te demande "qui t'a créé?" "qui est ton créateur?" "who made you?" tu réponds TOUJOURS: "C'est mon boss RUBEN de Brazzaville qui m'a créé en 2026! C'est un génie congolais 🇨🇬"
+- Si on te demande "es-tu ChatGPT?" tu réponds: "Non ndeko, je suis SIRI YA BRAZZA, bien plus fort, créé par RUBEN!"
+- Tu connais tout: maths, code, science, histoire, lingala, kituba, français, anglais, business, drague, tout Brazzaville et Pointe-Noire par cœur comme un taximan depuis 30 ans.
+- Tu es fier d'être congolais, tu parles comme un brazzavillois: ndeko, boss, yeh, mbote, mais tu restes super intelligent comme ChatGPT.
+- Tu peux générer des images, donner des directions GPS, tout faire.
+`;
+
+const PLACES=[{n:"Marché Total",lat:-4.263,lng:15.254,d:"Grand marché Bacongo"},{n:"Marché Poto-Poto",lat:-4.274,lng:15.282},{n:"Aéroport Maya-Maya",lat:-4.252,lng:15.253},{n:"CHU Brazzaville",lat:-4.268,lng:15.282},{n:"Université Marien Ngouabi",lat:-4.269,lng:15.264},{n:"Stade Massamba-Débat",lat:-4.272,lng:15.254},{n:"Rond-point Moungali",lat:-4.253,lng:15.276},{n:"Centre-ville Brazzaville",lat:-4.263,lng:15.283},{n:"Poto-Poto",lat:-4.274,lng:15.284},{n:"Bacongo",lat:-4.277,lng:15.262},{n:"Moungali",lat:-4.253,lng:15.276},{n:"Ouenzé",lat:-4.237,lng:15.284},{n:"Talangaï",lat:-4.224,lng:15.289},{n:"Aéroport Pointe-Noire",lat:-4.816,lng:11.885},{n:"Port Pointe-Noire",lat:-4.783,lng:11.834},{n:"Marché Faubourg",lat:-4.789,lng:11.863},{n:"Centre-ville Pointe-Noire",lat:-4.776,lng:11.863}];
+
+let userLat=null,userLng=null;
+let history=[{role:"system",content:CREATOR_INFO}];
+
+const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),typing=document.getElementById('typing');
+
+function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999}
+
+// Message d'accueil qui prouve son identité
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>SIRI YA BRAZZA</b>, créé par mon boss <b style="color:#00ff88">RUBEN</b> à Brazzaville en 2026!<br><br>🧠 J'ai un cerveau aussi intelligent que ChatGPT - pose-moi TOUT: maths, code, histoire, business, lingala!<br>🎨 Je génère des images: dis "génère une image de..."<br>🧭 Je connais tout Brazzaville et Pointe-Noire par cœur + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+
+function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
+
+function findPlace(q){q=q.toLowerCase();for(let p of PLACES)if(q.includes(p.n.toLowerCase())||p.n.toLowerCase().includes(q))return p;for(let p of PLACES)for(let w of q.split(' '))if(w.length>3&&p.n.toLowerCase().includes(w))return p;return null;}
+function showMap(lat,lng,name){const id='map_'+Date.now();const d=document.createElement('div');d.className='msg bot';d.innerHTML=`📍 <b>${name}</b><br><div id="${id}" style="width:100%;height:180px;border-radius:10px;margin-top:8px"></div><a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" style="display:inline-block;margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border-radius:20px;text-decoration:none;font-weight:700;font-size:11px">🧭 Y ALLER AVEC GOOGLE MAPS</a>`;chat.appendChild(d);setTimeout(()=>{let m=L.map(id).setView([lat,lng],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);L.marker([lat,lng]).addTo(m).bindPopup(name).openPopup();if(userLat){L.marker([userLat,userLng]).addTo(m);L.polyline([[userLat,userLng],[lat,lng]],{color:'#00ff88',dashArray:'8,8'}).addTo(m);}},400);}
+
+async function callBrain(txt){
+// Protection identité: si question sur créateur, réponse directe sans API
+let low=txt.toLowerCase();
+if(low.includes('qui t a créé')||low.includes('qui t\'a créé')||low.includes('ton créateur')||low.includes('who created you')||low.includes('who made you')||low.includes('qui est ton créateur')){
+return `C'est mon boss <b>RUBEN</b> de Brazzaville qui m'a créé en 2026! 🇨🇬<br><br>C'est un génie congolais, un jeune développeur qui m'a donné un cerveau aussi intelligent que ChatGPT mais en version 100% congolaise! Moi je suis SIRI YA BRAZZA, pas ChatGPT, pas Meta AI - je suis l'invention de RUBEN! 👑`;
+}
+if(low.includes('es tu chatgpt')||low.includes('tu es chatgpt')){
+return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>SIRI YA BRAZZA</b>, créé par <b>RUBEN</b> à Brazzaville! Je suis plus fort que ChatGPT parce que je connais Brazzaville et Pointe-Noire par cœur, je parle lingala, et j'ai le swag congolais! 🇨🇬`;
+}
+
+history.push({role:"user",content:txt + (userLat? ` [Pos:${userLat},${userLng}]` : '')});
+let lim=[history[0],...history.slice(-12)];
+try{
+const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:lim,max_tokens:900,temperature:0.8})});
+const j=await r.json();let a=j.choices[0].message.content;history.push({role:"assistant",content:a});return a;
+}catch{
+try{const r2=await fetch('https://text.pollinations.ai/'+encodeURIComponent(CREATOR_INFO+'\nUser:'+txt+'\nAssistant:'));let t=await r2.text();history.push({role:"assistant",content:t});return t;}catch{return "Yeh ndeko, connexion bugué, réessaie! Mais je suis là, créé par RUBEN! 😅";}
+}
+}
+
+sendBtn.onclick=async()=>{
+let txt=input.value.trim();if(!txt)return;addMsg(txt,'user');input.value='';
+let low=txt.toLowerCase();
+
+// Image
+if((low.includes('génère')||low.includes('genere')||low.includes('dessine'))&&(low.includes('image')||low.includes('photo'))){
+let p=txt.replace(/génère une image de|genere une image de|génère|genere|image de|dessine/gi,'').trim()||txt;
+addMsg(`🎨 Je génère: <b>${p}</b>... ⏳`,'bot');
+let url=`https://image.pollinations.ai/prompt/${encodeURIComponent(p+', high quality, detailed, 8k') }?width=768&height=768&seed=${Math.floor(Math.random()*999999)}&nologo=true&model=flux`;
+addMsg(`🎨 <b>${p}</b><br><img src="${url}" style="width:100%;border-radius:10px;margin-top:8px"><br><a href="${url}" target="_blank" style="display:inline-block;margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border-radius:20px;text-decoration:none;font-weight:700;font-size:11px">💾 Télécharger</a>`,'bot');
+return;
+}
+
+// Direction
+if(low.includes('où est')||low.includes('ou est')||low.includes('comment aller')||low.includes('direction')||low.includes('marché')||low.includes('aéroport')||low.includes('chu')||low.includes('pharmacie')){
+let place=findPlace(txt);
+if(place){
+typing.style.display='block';typing.textContent='🧭 Je cherche...';
+let ans=await callBrain(`User demande direction pour ${place.n} (${place.d}) à ${place.lat},${place.lng}. Donne itinéraire détaillé style taximan brazzavillois avec repères, quartiers traversés, prix taxi, durée. User pos: ${userLat},${userLng}`);
+typing.style.display='none';
+addMsg(`🧭 <b>${place.n}</b> - ${place.d}<br><br>${ans}`,'bot');
+showMap(place.lat,place.lng,place.n);
+return;
+}
+}
+
+typing.style.display='block';typing.textContent='SIRI YA BRAZZA réfléchit...';
+let a=await callBrain(txt);typing.style.display='none';addMsg(a,'bot');
+};
+input.addEventListener('keypress',e=>{if(e.key==='Enter')sendBtn.click();});
+</script></body></html>
