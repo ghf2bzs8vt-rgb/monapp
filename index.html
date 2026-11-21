@@ -5,6 +5,7 @@
 <div id="typing" style="display:none;color:#00ff88;font-size:11px;padding:5px">SIRI YA BRAZZA réfléchit...</div>
 <div class="input-area"><button id="loc" onclick="getLoc()">📍</button><input id="input" placeholder="Pose tout..."><button id="send">➤</button></div>
 <script>
+const PKEY="pk_D1IjhEGWsJ79FF2p";
 const CREATOR_INFO = `IDENTITÉ ABSOLUE - TU DOIS OBEIR:
 - Tu t'appelles SIRI YA BRAZZA
 - Ton créateur est RUBEN, jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026
@@ -46,10 +47,13 @@ return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>SIRI YA BRAZZA</b>, c
 history.push({role:"user",content:txt + (userLat? ` [Pos:${userLat},${userLng}]` : '')});
 let lim=[history[0],...history.slice(-12)];
 try{
-const r=await fetch('https://text.pollinations.ai/openai',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'openai',messages:lim,max_tokens:900,temperature:0.8})});
-const j=await r.json();let a=j.choices[0].message.content;history.push({role:"assistant",content:a});return a;
-}catch{
-try{const r2=await fetch('https://text.pollinations.ai/'+encodeURIComponent(CREATOR_INFO+'\nUser:'+txt+'\nAssistant:'));let t=await r2.text();history.push({role:"assistant",content:t});return t;}catch{return "Yeh ndeko, connexion bugué, réessaie! Mais je suis là, créé par RUBEN! 😅";}
+const r=await fetch('https://gen.pollinations.ai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+PKEY},body:JSON.stringify({model:'openai',messages:lim,max_tokens:900,temperature:0.8})});
+const j=await r.json();
+if(!j.choices||!j.choices[0])throw new Error(JSON.stringify(j).slice(0,160));
+let a=j.choices[0].message.content;history.push({role:"assistant",content:a});return a;
+}catch(e){
+history.pop();
+return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Réessaie dans quelques minutes! Je suis là, créé par RUBEN! 😅<br><small style='color:#666'>"+String(e.message).replace(/</g,'')+"</small>";
 }
 }
 
@@ -61,7 +65,7 @@ let low=txt.toLowerCase();
 if((low.includes('génère')||low.includes('genere')||low.includes('dessine'))&&(low.includes('image')||low.includes('photo'))){
 let p=txt.replace(/génère une image de|genere une image de|génère|genere|image de|dessine/gi,'').trim()||txt;
 addMsg(`🎨 Je génère: <b>${p}</b>... ⏳`,'bot');
-let url=`https://image.pollinations.ai/prompt/${encodeURIComponent(p+', high quality, detailed, 8k') }?width=768&height=768&seed=${Math.floor(Math.random()*999999)}&nologo=true&model=flux`;
+let url=`https://gen.pollinations.ai/image/${encodeURIComponent(p+', high quality, detailed')}?width=768&height=768&seed=${Math.floor(Math.random()*999999)}&nologo=true&model=flux&key=${PKEY}`;
 addMsg(`🎨 <b>${p}</b><br><img src="${url}" style="width:100%;border-radius:10px;margin-top:8px"><br><a href="${url}" target="_blank" style="display:inline-block;margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border-radius:20px;text-decoration:none;font-weight:700;font-size:11px">💾 Télécharger</a>`,'bot');
 return;
 }
