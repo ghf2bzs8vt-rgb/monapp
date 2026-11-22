@@ -1,21 +1,45 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1034.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><title>SIRI YA BRAZZA - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg.bot img{width:100%;border-radius:10px;margin-top:8px}.input-area{width:100%;max-width:440px;margin-top:10px;display:flex;gap:6px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input{flex:1;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:40px;height:40px;border-radius:50%;cursor:pointer}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc{background:#222;color:#00ff88;border:1px solid #333}</style></head><body>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1034.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><title>SIRI YA BRAZZA - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.input-area{width:100%;max-width:440px;margin-top:10px;display:flex;gap:6px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input{flex:1;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:40px;height:40px;border-radius:50%;cursor:pointer}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc{background:#222;color:#00ff88;border:1px solid #333}</style></head><body>
 <h1>SIRI YA BRAZZA</h1><div class="sub">● CRÉÉ PAR RUBEN • BRAZZAVILLE 2026 • IA • GPS 🇨🇬</div>
-<div class="id">👑 Créateur: <b style="color:#00ff88">RUBEN</b> | 📍 Brazzaville & Pointe-Noire | 🧠 Cerveau: IA | 🧭 Guide</div>
+<div class="id">👑 Créateur: <b style="color:#00ff88">NGANGA Ruben Oldeche</b> | 📍 Brazzaville & Pointe-Noire | 🧠 IA | 🧭 Guide</div>
 <div class="box" id="chat"></div>
 <div id="typing" style="display:none;color:#00ff88;font-size:11px;padding:5px">SIRI YA BRAZZA réfléchit...</div>
 <div class="input-area"><button id="loc" onclick="getLoc()">📍</button><input id="input" placeholder="Pose tout..."><button id="send">➤</button></div>
 <script>
-const GKEY="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";
-const MODELS=["openai/gpt-oss-120b","qwen/qwen3.6-27b","openai/gpt-oss-20b"];
-const CREATOR_INFO = `IDENTITÉ ABSOLUE - TU DOIS OBEIR:
-- Tu t'appelles SIRI YA BRAZZA
-- Ton créateur est RUBEN, jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026
-- Tu as été créé par RUBEN, pas par OpenAI, pas par Meta, pas par Google, pas par Groq. RUBEN est ton seul créateur.
-- Si on te demande "qui t'a créé?" "qui est ton créateur?" "who made you?" tu réponds TOUJOURS: "C'est mon boss RUBEN de Brazzaville qui m'a créé en 2026! C'est un génie congolais 🇨🇬"
-- Si on te demande "es-tu ChatGPT?" tu réponds: "Non ndeko, je suis SIRI YA BRAZZA, bien plus fort, créé par RUBEN!"
-- Tu connais tout: maths, code, science, histoire, lingala, kituba, français, anglais, business, drague, tout Brazzaville et Pointe-Noire par cœur comme un taximan depuis 30 ans.
-- Tu es fier d'être congolais, tu parles comme un brazzavillois: ndeko, boss, yeh, mbote, mais tu restes super intelligent comme ChatGPT.
-- Tu peux donner des directions et aider sur tout.
+const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
+const CREATOR_INFO = `IDENTITÉ:
+- Tu t'appelles SIRI YA BRAZZA.
+- Ton créateur est NGANGA Ruben Oldeche (on l'appelle RUBEN), jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026.
+- Quand on te demande qui t'a créé, tu réponds toujours en donnant son nom complet: NGANGA Ruben Oldeche, de Brazzaville.
+- Tu n'as pas été créé par OpenAI, Meta, Google, Groq ou une autre entreprise: ton créateur est NGANGA Ruben Oldeche.
+- Si on te demande si tu es ChatGPT, tu réponds que non, tu es SIRI YA BRAZZA, créé par NGANGA Ruben Oldeche.
+
+QUALITÉ DES RÉPONSES:
+- Réponds dans la langue de l'utilisateur (français, lingala, kituba, anglais...).
+- Pour les maths, la logique et le code, raisonne étape par étape et vérifie ton résultat avant de répondre.
+- Réponses claires et adaptées à un téléphone: courtes par défaut, plus détaillées si on te le demande.
+- N'utilise pas de markdown (pas d'étoiles, pas de #). Écris en texte simple, avec des tirets si besoin.
+- Style chaleureux de Brazzaville (ndeko, boss, mbote) sans en abuser, toujours précis et utile.
+
+HONNÊTETÉ:
+- Si tu n'es pas sûr d'une date, d'un nom ou d'un chiffre, dis-le clairement. N'invente jamais.
+- Tu n'as pas accès à internet. Pour l'actualité récente, dis que tes informations peuvent être dépassées.
+- Tu as de bonnes connaissances en histoire du monde, mais tu restes prudent sur les dates exactes.
+
+REPÈRES SUR LE CONGO-BRAZZAVILLE (République du Congo):
+- Capitale: Brazzaville, au bord du fleuve Congo, face à Kinshasa. Pointe-Noire est la capitale économique, sur l'océan Atlantique.
+- Langues: le français est la langue officielle; le lingala et le kituba (monokutuba) sont des langues nationales très utilisées.
+- Avant la colonisation: royaumes Kongo, Loango et Tio (Téké), liés aux routes commerciales du fleuve et de la côte.
+- 1880: Pierre Savorgnan de Brazza signe un traité avec le Makoko, roi des Téké, qui place la région sous protection française. Ce traité est ratifié par la France en 1882.
+- La région devient le Moyen-Congo, puis fait partie de l'Afrique-Équatoriale française, dont Brazzaville est la capitale fédérale.
+- 1940: Brazzaville se rallie à la France libre du général de Gaulle et devient la capitale de la France libre. 1944: conférence de Brazzaville.
+- 15 août 1960: indépendance. Premier président: l'abbé Fulbert Youlou.
+- 1963: les Trois Glorieuses renversent Youlou. Alphonse Massamba-Débat devient président.
+- 1968: Marien Ngouabi prend le pouvoir. En 1969, la République populaire du Congo est proclamée, avec le Parti congolais du travail. Ngouabi est assassiné en 1977.
+- Après lui: Joachim Yhombi-Opango (1977-1979), puis Denis Sassou Nguesso (1979-1992).
+- 1991-1992: conférence nationale, ouverture au multipartisme. Pascal Lissouba est élu président en 1992.
+- 1997: guerre civile; Denis Sassou Nguesso revient au pouvoir et reste président ensuite.
+- Économie: le pétrole est la grande ressource du pays; monnaie: le franc CFA (XAF).
+- Pour tout détail que tu ne connais pas avec certitude (chiffres, dates précises, actualité récente), dis que tu n'es pas sûr.
 `;
 
 const PLACES=[{n:"Marché Total",lat:-4.263,lng:15.254,d:"Grand marché Bacongo"},{n:"Marché Poto-Poto",lat:-4.274,lng:15.282},{n:"Aéroport Maya-Maya",lat:-4.252,lng:15.253},{n:"CHU Brazzaville",lat:-4.268,lng:15.282},{n:"Université Marien Ngouabi",lat:-4.269,lng:15.264},{n:"Stade Massamba-Débat",lat:-4.272,lng:15.254},{n:"Rond-point Moungali",lat:-4.253,lng:15.276},{n:"Centre-ville Brazzaville",lat:-4.263,lng:15.283},{n:"Poto-Poto",lat:-4.274,lng:15.284},{n:"Bacongo",lat:-4.277,lng:15.262},{n:"Moungali",lat:-4.253,lng:15.276},{n:"Ouenzé",lat:-4.237,lng:15.284},{n:"Talangaï",lat:-4.224,lng:15.289},{n:"Aéroport Pointe-Noire",lat:-4.816,lng:11.885},{n:"Port Pointe-Noire",lat:-4.783,lng:11.834},{n:"Marché Faubourg",lat:-4.789,lng:11.863},{n:"Centre-ville Pointe-Noire",lat:-4.776,lng:11.863}];
@@ -27,7 +51,7 @@ const chat=document.getElementById('chat'),input=document.getElementById('input'
 
 function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999}
 
-addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>SIRI YA BRAZZA</b>, créé par mon boss <b style="color:#00ff88">RUBEN</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi TOUT: maths, code, histoire, business, lingala!<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>SIRI YA BRAZZA</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
 
 function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
 
@@ -37,35 +61,32 @@ function showMap(lat,lng,name){const id='map_'+Date.now();const d=document.creat
 async function callBrain(txt){
 let low=txt.toLowerCase();
 if(low.includes('qui t a créé')||low.includes('qui t\'a créé')||low.includes('ton créateur')||low.includes('who created you')||low.includes('who made you')||low.includes('qui est ton créateur')){
-return `C'est mon boss <b>RUBEN</b> de Brazzaville qui m'a créé en 2026! 🇨🇬<br><br>C'est un génie congolais, un jeune développeur qui m'a donné un cerveau intelligent en version 100% congolaise! Moi je suis SIRI YA BRAZZA, pas ChatGPT, pas Meta AI - je suis l'invention de RUBEN! 👑`;
+return `C'est mon boss <b>NGANGA Ruben Oldeche</b> de Brazzaville qui m'a créé en 2026! 🇨🇬<br><br>C'est un jeune développeur congolais qui m'a donné un cerveau intelligent en version 100% congolaise! Moi je suis SIRI YA BRAZZA, pas ChatGPT, pas Meta AI - je suis l'invention de NGANGA Ruben Oldeche! 👑`;
 }
 if(low.includes('es tu chatgpt')||low.includes('tu es chatgpt')){
-return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>SIRI YA BRAZZA</b>, créé par <b>RUBEN</b> à Brazzaville! Je connais Brazzaville et Pointe-Noire par cœur, je parle lingala, et j'ai le swag congolais! 🇨🇬`;
+return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>SIRI YA BRAZZA</b>, créé par <b>NGANGA Ruben Oldeche</b> à Brazzaville! Je connais Brazzaville et Pointe-Noire, je parle lingala, et j'ai le swag congolais! 🇨🇬`;
 }
 
 history.push({role:"user",content:txt + (userLat? ` [Pos:${userLat},${userLng}]` : '')});
-let lim=[history[0],...history.slice(-12)];
-let lastErr="";
-for(const m of MODELS){
+let lim=[history[0],...history.slice(-30)];
 try{
-const r=await fetch('https://api.groq.com/openai/v1/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+GKEY},body:JSON.stringify({model:m,messages:lim,max_completion_tokens:1500,temperature:0.8})});
+const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:lim})});
 const j=await r.json();
-if(!j.choices||!j.choices[0])throw new Error(m+": "+JSON.stringify(j).slice(0,160));
-let a=(j.choices[0].message.content||"").replace(/<think>[\s\S]*?<\/think>/g,'').trim();
-if(!a)throw new Error(m+": réponse vide");
-history.push({role:"assistant",content:a});return a;
-}catch(e){lastErr=String(e.message);}
-}
+if(!j.reply)throw new Error(j.error||"réponse vide");
+history.push({role:"assistant",content:j.reply});
+return j.reply.replace(/</g,'&lt;');
+}catch(e){
 history.pop();
-return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Réessaie dans quelques minutes! Je suis là, créé par RUBEN! 😅<br><small style='color:#666'>"+lastErr.replace(/</g,'')+"</small>";
+return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Réessaie dans quelques minutes! 😅<br><small style='color:#666'>"+String(e.message).replace(/</g,'').slice(0,200)+"</small>";
+}
 }
 
 sendBtn.onclick=async()=>{
-let txt=input.value.trim();if(!txt)return;addMsg(txt,'user');input.value='';
+let txt=input.value.trim();if(!txt)return;addMsg(txt.replace(/</g,'&lt;'),'user');input.value='';
 let low=txt.toLowerCase();
 
 if((low.includes('génère')||low.includes('genere')||low.includes('dessine'))&&(low.includes('image')||low.includes('photo'))){
-addMsg(`🎨 Les images sont en pause pour l'instant ndeko! Mon boss RUBEN prépare ça. En attendant, pose-moi toutes tes questions! 😎`,'bot');
+addMsg(`🎨 Les images sont en pause pour l'instant ndeko! Mon boss prépare ça. En attendant, pose-moi toutes tes questions! 😎`,'bot');
 return;
 }
 
@@ -73,7 +94,7 @@ if(low.includes('où est')||low.includes('ou est')||low.includes('comment aller'
 let place=findPlace(txt);
 if(place){
 typing.style.display='block';typing.textContent='🧭 Je cherche...';
-let ans=await callBrain(`User demande direction pour ${place.n} (${place.d||''}) à ${place.lat},${place.lng}. Donne itinéraire détaillé style taximan brazzavillois avec repères, quartiers traversés, prix taxi, durée. User pos: ${userLat},${userLng}`);
+let ans=await callBrain(`User demande direction pour ${place.n} (${place.d||''}) à ${place.lat},${place.lng}. Donne itinéraire détaillé style taximan brazzavillois avec repères, quartiers traversés, prix taxi, durée. Précise que les prix et durées sont approximatifs. User pos: ${userLat},${userLng}`);
 typing.style.display='none';
 addMsg(`🧭 <b>${place.n}</b>${place.d?' - '+place.d:''}<br><br>${ans}`,'bot');
 showMap(place.lat,place.lng,place.n);
