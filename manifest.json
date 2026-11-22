@@ -1,6 +1,6 @@
 {
-  "name": "SIRI YA BRAZZA",
-  "short_name": "SIRI YA BRAZZA",
+  "name": "Brazza AI",
+  "short_name": "Brazza AI",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
