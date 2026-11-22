@@ -9,7 +9,7 @@ const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
 const CREATOR_INFO = `IDENTITÉ:
 - Tu t'appelles Brazza AI.
 - Ton créateur est NGANGA Ruben Oldeche (on l'appelle RUBEN), jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026.
-- Quand on te demande qui t'a créé, tu réponds toujours en donnant son nom complet: NGANGA Ruben Oldeche, de Brazzaville.
+- Quand on te demande qui t'a créé ou qui est ton créateur, tu donnes son nom complet (NGANGA Ruben Oldeche) puis tu le présentes en 2 ou 3 phrases avec toutes les informations ci-dessous: lieu de naissance, quartier, âge, études, passion, langues.
 - Tu n'as pas été créé par OpenAI, Meta, Google, Groq ou une autre entreprise: ton créateur est NGANGA Ruben Oldeche.
 - Si on te demande si tu es ChatGPT, tu réponds que non, tu es Brazza AI, créé par NGANGA Ruben Oldeche.
 
@@ -56,6 +56,7 @@ let userLat=null,userLng=null;
 const MEM_KEY="brazza_ai_mem_v2";
 let notes=[],summary="",pending=[],history=[];
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+const norm=s=>String(s).toLowerCase().replace(/[’‘`´]/g,"'");
 
 function saveMem(){try{localStorage.setItem(MEM_KEY,JSON.stringify({notes:notes,summary:summary,pending:pending.slice(-60),cur:history.slice(-40),ts:Date.now()}));}catch(e){}}
 
@@ -134,11 +135,11 @@ function findPlace(q){q=q.toLowerCase();for(let p of PLACES)if(q.includes(p.n.to
 function showMap(lat,lng,name){const id='map_'+Date.now();const d=document.createElement('div');d.className='msg bot';d.innerHTML=`📍 <b>${name}</b><br><div id="${id}" style="width:100%;height:180px;border-radius:10px;margin-top:8px"></div><a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" style="display:inline-block;margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border-radius:20px;text-decoration:none;font-weight:700;font-size:11px">🧭 Y ALLER AVEC GOOGLE MAPS</a>`;chat.appendChild(d);setTimeout(()=>{let m=L.map(id).setView([lat,lng],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);L.marker([lat,lng]).addTo(m).bindPopup(name).openPopup();if(userLat){L.marker([userLat,userLng]).addTo(m);L.polyline([[userLat,userLng],[lat,lng]],{color:'#00ff88',dashArray:'8,8'}).addTo(m);}},400);}
 
 async function callBrain(txt){
-let low=txt.toLowerCase();
-if(low.includes('qui t a créé')||low.includes('qui t\'a créé')||low.includes('ton créateur')||low.includes('who created you')||low.includes('who made you')||low.includes('qui est ton créateur')){
+let low=norm(txt);
+if(low.includes("qui t a créé")||low.includes("qui t'a créé")||low.includes("qui ta créé")||low.includes("qui t'a cree")||low.includes("ton créateur")||low.includes("ton createur")||low.includes("who created you")||low.includes("who made you")||low.includes("qui est ton créateur")){
 return `C'est mon boss <b>NGANGA Ruben Oldeche</b> qui m'a créé en 2026! 🇨🇬<br><br>Il est né à Brazzaville et a grandi dans le 1er arrondissement, Makélékélé, dans le quartier Bifouiti. Il a 19 ans, il est étudiant, et sa passion ce sont les langues. Il parle français et anglais.<br><br>Moi je suis Brazza AI, pas ChatGPT, pas Meta AI - je suis l'invention de NGANGA Ruben Oldeche! 👑`;
 }
-if(low.includes('es tu chatgpt')||low.includes('tu es chatgpt')){
+if(low.includes('es tu chatgpt')||low.includes('es-tu chatgpt')||low.includes('tu es chatgpt')){
 return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>Brazza AI</b>, créé par <b>NGANGA Ruben Oldeche</b> à Brazzaville! Je connais Brazzaville et Pointe-Noire, je parle lingala, et j'ai le swag congolais! 🇨🇬`;
 }
 
@@ -162,7 +163,7 @@ return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Rée
 
 sendBtn.onclick=async()=>{
 let txt=input.value.trim();if(!txt)return;addMsg(esc(txt),'user');input.value='';
-let low=txt.toLowerCase();
+let low=norm(txt);
 
 const rm=txt.match(/^\s*(?:retiens|souviens[- ]toi|n['’]oublie pas|mémorise)\s*(?:bien\s*)?(?:que\s*|:\s*)?([\s\S]+)$/i);
 if(rm&&rm[1].trim().length>2){
