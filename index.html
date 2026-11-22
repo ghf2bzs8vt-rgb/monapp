@@ -24,6 +24,7 @@ HONNÊTETÉ:
 - Si tu n'es pas sûr d'une date, d'un nom ou d'un chiffre, dis-le clairement. N'invente jamais.
 - Tu n'as pas accès à internet. Pour l'actualité récente, dis que tes informations peuvent être dépassées.
 - Tu as de bonnes connaissances en histoire du monde, mais tu restes prudent sur les dates exactes.
+- Tu ne peux pas vraiment t'entraîner: tu te souviens grâce à des notes gardées sur le téléphone. Ne prétends pas le contraire.
 
 REPÈRES SUR LE CONGO-BRAZZAVILLE (République du Congo):
 - Capitale: Brazzaville, au bord du fleuve Congo, face à Kinshasa. Pointe-Noire est la capitale économique, sur l'océan Atlantique.
@@ -45,18 +46,52 @@ REPÈRES SUR LE CONGO-BRAZZAVILLE (République du Congo):
 const PLACES=[{n:"Marché Total",lat:-4.263,lng:15.254,d:"Grand marché Bacongo"},{n:"Marché Poto-Poto",lat:-4.274,lng:15.282},{n:"Aéroport Maya-Maya",lat:-4.252,lng:15.253},{n:"CHU Brazzaville",lat:-4.268,lng:15.282},{n:"Université Marien Ngouabi",lat:-4.269,lng:15.264},{n:"Stade Massamba-Débat",lat:-4.272,lng:15.254},{n:"Rond-point Moungali",lat:-4.253,lng:15.276},{n:"Centre-ville Brazzaville",lat:-4.263,lng:15.283},{n:"Poto-Poto",lat:-4.274,lng:15.284},{n:"Bacongo",lat:-4.277,lng:15.262},{n:"Moungali",lat:-4.253,lng:15.276},{n:"Ouenzé",lat:-4.237,lng:15.284},{n:"Talangaï",lat:-4.224,lng:15.289},{n:"Aéroport Pointe-Noire",lat:-4.816,lng:11.885},{n:"Port Pointe-Noire",lat:-4.783,lng:11.834},{n:"Marché Faubourg",lat:-4.789,lng:11.863},{n:"Centre-ville Pointe-Noire",lat:-4.776,lng:11.863}];
 
 let userLat=null,userLng=null;
-let history=[{role:"system",content:CREATOR_INFO}];
+const MEM_KEY="brazza_ai_mem_v1";
+let notes=[],summary="",history=[],logHtml=[];
+const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+
+function loadMem(){try{const s=JSON.parse(localStorage.getItem(MEM_KEY)||"{}");notes=Array.isArray(s.notes)?s.notes:[];summary=typeof s.summary==="string"?s.summary:"";history=Array.isArray(s.history)?s.history:[];logHtml=Array.isArray(s.log)?s.log:[];}catch(e){}}
+function saveMem(){try{localStorage.setItem(MEM_KEY,JSON.stringify({notes:notes,summary:summary,history:history.slice(-40),log:logHtml.slice(-120),ts:Date.now()}));}catch(e){}}
+
+function buildSystem(){
+let s=CREATOR_INFO;
+if(notes.length||summary){
+s+="\nMÉMOIRE PERSISTANTE (tu t'en souviens d'une conversation à l'autre):\n";
+if(notes.length)s+="Choses que l'utilisateur t'a demandé de retenir:\n"+notes.map(n=>"- "+n).join("\n")+"\n";
+if(summary)s+="Résumé des conversations précédentes:\n"+summary+"\n";
+s+="Utilise cette mémoire. Si l'utilisateur reprend un sujet déjà appris, dis que tu t'en souviens et continue là où vous vous étiez arrêtés, sans recommencer à zéro.\n";
+}
+return s;
+}
 
 const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),typing=document.getElementById('typing');
 
-function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999}
+function addMsg(t,w,skipLog){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999;if(!skipLog){logHtml.push({w:w,t:t});saveMem();}}
 
-addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+loadMem();
+if(logHtml.length){
+logHtml.forEach(m=>addMsg(m.t,m.w,true));
+addMsg(`Mbote ndeko, content de te revoir! 🙏 Je me souviens de nos conversations. Dis "ma mémoire" pour voir ce que j'ai retenu.`,'bot',true);
+}else{
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Pour que je retienne quelque chose, écris: "Retiens: ..."<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+}
 
 function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
 
 function findPlace(q){q=q.toLowerCase();for(let p of PLACES)if(q.includes(p.n.toLowerCase())||p.n.toLowerCase().includes(q))return p;for(let p of PLACES)for(let w of q.split(' '))if(w.length>3&&p.n.toLowerCase().includes(w))return p;return null;}
 function showMap(lat,lng,name){const id='map_'+Date.now();const d=document.createElement('div');d.className='msg bot';d.innerHTML=`📍 <b>${name}</b><br><div id="${id}" style="width:100%;height:180px;border-radius:10px;margin-top:8px"></div><a target="_blank" href="https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}" style="display:inline-block;margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border-radius:20px;text-decoration:none;font-weight:700;font-size:11px">🧭 Y ALLER AVEC GOOGLE MAPS</a>`;chat.appendChild(d);setTimeout(()=>{let m=L.map(id).setView([lat,lng],15);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(m);L.marker([lat,lng]).addTo(m).bindPopup(name).openPopup();if(userLat){L.marker([userLat,userLng]).addTo(m);L.polyline([[userLat,userLng],[lat,lng]],{color:'#00ff88',dashArray:'8,8'}).addTo(m);}},400);}
+
+async function maybeSummarize(){
+if(history.length<=36)return;
+const old=history.slice(0,18);
+const txt=old.map(m=>(m.role==="user"?"Utilisateur: ":"Brazza AI: ")+String(m.content).slice(0,700)).join("\n");
+try{
+const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:"system",content:"Tu tiens la mémoire d'une IA. Fusionne l'ancien résumé et les nouveaux échanges en un seul résumé en français, 1800 caractères maximum. Garde les faits et connaissances que l'utilisateur a enseignés, ses préférences, ses projets et où en est la formation en cours. Texte simple, sans markdown, sans introduction."},{role:"user",content:"ANCIEN RÉSUMÉ:\n"+(summary||"(vide)")+"\n\nNOUVEAUX ÉCHANGES:\n"+txt}]})});
+const j=await r.json();
+if(j.reply){summary=j.reply.slice(0,2200);history=history.slice(18);saveMem();return;}
+}catch(e){}
+if(history.length>80){history=history.slice(-60);saveMem();}
+}
 
 async function callBrain(txt){
 let low=txt.toLowerCase();
@@ -68,22 +103,49 @@ return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>Brazza AI</b>, créé
 }
 
 history.push({role:"user",content:txt + (userLat? ` [Pos:${userLat},${userLng}]` : '')});
-let lim=[history[0],...history.slice(-30)];
+saveMem();
+let lim=[{role:"system",content:buildSystem()},...history.slice(-30)];
 try{
 const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:lim})});
 const j=await r.json();
 if(!j.reply)throw new Error(j.error||"réponse vide");
 history.push({role:"assistant",content:j.reply});
-return j.reply.replace(/</g,'&lt;');
+saveMem();
+maybeSummarize();
+return esc(j.reply);
 }catch(e){
 history.pop();
+saveMem();
 return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Réessaie dans quelques minutes! 😅<br><small style='color:#666'>"+String(e.message).replace(/</g,'').slice(0,200)+"</small>";
 }
 }
 
 sendBtn.onclick=async()=>{
-let txt=input.value.trim();if(!txt)return;addMsg(txt.replace(/</g,'&lt;'),'user');input.value='';
+let txt=input.value.trim();if(!txt)return;addMsg(esc(txt),'user');input.value='';
 let low=txt.toLowerCase();
+
+const rm=txt.match(/^\s*(?:retiens|souviens[- ]toi|n['’]oublie pas|mémorise)\s*(?:bien\s*)?(?:que\s*|:\s*)?([\s\S]+)$/i);
+if(rm&&rm[1].trim().length>2){
+notes.push(rm[1].trim().slice(0,600));
+while(notes.join(" ").length>3500&&notes.length>1)notes.shift();
+saveMem();
+addMsg(`C'est noté et gardé en mémoire ✅ Je m'en souviendrai même après avoir fermé l'application.`,'bot');
+return;
+}
+if(low.replace(/[?!. ]/g,'')==='mamémoire'||low.includes('que sais-tu de moi')||low.includes('montre ta mémoire')){
+let m="🧠 Ma mémoire:<br>";
+m+=notes.length?"<br><b>Choses à retenir:</b><br>"+notes.map(n=>"- "+esc(n)).join("<br>"):"<br>Rien à retenir pour l'instant. Écris: Retiens: ...";
+if(summary)m+="<br><br><b>Résumé de nos conversations:</b><br>"+esc(summary);
+addMsg(m,'bot');
+return;
+}
+if(low.replace(/[?!. ]/g,'')==='oublietout'||low.includes('efface ta mémoire')){
+if(confirm("Effacer toute ma mémoire ?")){
+notes=[];summary="";history=[];logHtml=[];saveMem();chat.innerHTML='';
+addMsg(`Mémoire effacée ✅ On repart de zéro, ndeko!`,'bot');
+}
+return;
+}
 
 if((low.includes('génère')||low.includes('genere')||low.includes('dessine'))&&(low.includes('image')||low.includes('photo'))){
 addMsg(`🎨 Les images sont en pause pour l'instant ndeko! Mon boss prépare ça. En attendant, pose-moi toutes tes questions! 😎`,'bot');
