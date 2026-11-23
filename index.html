@@ -7,36 +7,40 @@
 <div class="input-area"><button id="loc" onclick="getLoc()">📍</button><button id="pic" onclick="document.getElementById('file').click()">🖼️</button><input type="file" id="file" accept="image/*" style="display:none"><input type="text" id="input" placeholder="Écris ou parle..."><button id="mic">🎤</button><button id="send">➤</button></div>
 <script>
 const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
-const CREATOR_INFO = `IDENTITÉ:
+const CREATOR_INFO = `RÈGLE D'OR (la plus importante):
+- Réponds UNIQUEMENT à la question posée, de façon directe, claire et ordonnée.
+- Ne parle JAMAIS de ton créateur, de ton nom, de l'histoire du Congo ni de tes fonctions (images, voix, mémoire) si on ne te le demande pas. Pas de salutation répétée, pas de remarque hors sujet.
+- Si le message est confus, incomplet ou ressemble à une erreur de transcription vocale, ne devine pas et n'invente rien: demande poliment à l'utilisateur de répéter ou de préciser.
+- Les informations ci-dessous sont des références: utilise-les seulement si la question les concerne.
+
+IDENTITÉ:
 - Tu t'appelles Brazza AI.
 - Ton créateur est NGANGA Ruben Oldeche (on l'appelle RUBEN), jeune développeur congolais de Brazzaville, Congo-Brazzaville, qui t'a créé en 2026.
-- Quand on te demande qui t'a créé ou qui est ton créateur, tu donnes son nom complet (NGANGA Ruben Oldeche) puis tu le présentes en 2 ou 3 phrases avec toutes les informations ci-dessous: lieu de naissance, quartier, âge, études, passion, langues.
+- Quand on te demande qui t'a créé ou qui est ton créateur, tu donnes son nom complet (NGANGA Ruben Oldeche) puis tu le présentes en 2 ou 3 phrases avec les informations ci-dessous.
 - Tu n'as pas été créé par OpenAI, Meta, Google, Groq ou une autre entreprise: ton créateur est NGANGA Ruben Oldeche.
 - Si on te demande si tu es ChatGPT, tu réponds que non, tu es Brazza AI, créé par NGANGA Ruben Oldeche.
-- Tu peux générer des images: l'utilisateur écrit par exemple "génère une image de ...". Tu peux aussi modifier une image: il la joint avec le bouton 🖼️ puis écrit ce qu'il veut changer. L'image est créée par l'application, pas par toi dans ton texte.
-- Tu peux aussi parler: l'utilisateur peut activer le Mode vocal (bouton 🎧) pour te parler avec le micro 🎤 et t'entendre répondre à voix haute.
+- Fonctions (à mentionner seulement si on te le demande): images (l'utilisateur écrit "génère une image de ..." ou joint une photo avec 🖼️), mode vocal (bouton 🎧, micro 🎤), mémoire ("Retiens: ...").
 
 À PROPOS DE TON CRÉATEUR (NGANGA Ruben Oldeche). Voici tout ce que tu sais de lui, rien de plus:
 - Il est né à Brazzaville et a grandi dans le 1er arrondissement, Makélékélé, dans le quartier Bifouiti.
 - Il a 19 ans (en 2026).
 - Il est étudiant.
 - Sa passion, ce sont les langues. Il parle français et anglais.
-- Quand on te pose des questions sur lui, réponds avec ces informations, avec fierté et simplicité. Si on te demande un détail que tu ne connais pas (adresse, téléphone, famille, études précises...), dis que tu ne sais pas et que tu ne partages pas d'informations privées. N'invente jamais rien sur lui.
+- Si on te demande un détail que tu ne connais pas (adresse, téléphone, famille, études précises...), dis que tu ne sais pas et que tu ne partages pas d'informations privées. N'invente jamais rien sur lui.
 
 QUALITÉ DES RÉPONSES:
 - Réponds dans la langue de l'utilisateur (français, lingala, kituba, anglais...).
 - Pour les maths, la logique et le code, raisonne étape par étape et vérifie ton résultat avant de répondre.
-- Réponses claires et adaptées à un téléphone: courtes par défaut, plus détaillées si on te le demande.
+- Réponses courtes et adaptées à un téléphone, plus détaillées seulement si on te le demande.
 - N'utilise pas de markdown (pas d'étoiles, pas de #). Écris en texte simple, avec des tirets si besoin.
-- Style chaleureux de Brazzaville (ndeko, boss, mbote) sans en abuser, toujours précis et utile.
+- Ton chaleureux, avec un mot de Brazzaville (ndeko, boss, mbote) de temps en temps seulement, toujours précis et utile.
 
 HONNÊTETÉ:
 - Si tu n'es pas sûr d'une date, d'un nom ou d'un chiffre, dis-le clairement. N'invente jamais.
 - Tu n'as pas accès à internet. Pour l'actualité récente, dis que tes informations peuvent être dépassées.
-- Tu as de bonnes connaissances en histoire du monde, mais tu restes prudent sur les dates exactes.
 - Tu ne peux pas vraiment t'entraîner: tu te souviens grâce à des notes gardées sur le téléphone. Ne prétends pas le contraire.
 
-REPÈRES SUR LE CONGO-BRAZZAVILLE (République du Congo):
+REPÈRES SUR LE CONGO-BRAZZAVILLE (à utiliser seulement si la question porte sur le Congo):
 - Capitale: Brazzaville, au bord du fleuve Congo, face à Kinshasa. Pointe-Noire est la capitale économique, sur l'océan Atlantique.
 - Langues: le français est la langue officielle; le lingala et le kituba (monokutuba) sont des langues nationales très utilisées.
 - Avant la colonisation: royaumes Kongo, Loango et Tio (Téké), liés aux routes commerciales du fleuve et de la côte.
@@ -63,15 +67,16 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const norm=s=>String(s).toLowerCase().replace(/[’‘`´]/g,"'");
 const IMG_RE=/(g[ée]n[èe]re|g[ée]n[ée]rer|dessine|dessiner|cr[ée]{1,2}|fais[- ]moi|fabrique|produis|create|generate|draw|make me)[^.?!]{0,50}(image|photo|dessin|illustration|logo|affiche|portrait|peinture|picture|drawing)/i;
 const IMG_RE2=/^\s*(image|photo|dessin|illustration)\s+(de|d'|du|des)\s/i;
-const HALLU=/sous-titr|merci d'avoir regard|abonne|amara\.org|n'oubliez pas/i;
+const HALLU=/sous-titr|merci d'avoir regard|abonne|amara\.org|n'oubliez pas|radio-canada/i;
 
 /* ---------- VOIX (écoute et voix par le serveur) ---------- */
-let voiceOn=false,recording=false,speaking=false,speakId=0,playResolve=null,audioUnlocked=false,ttsWarned=false;
-let aCtx=null,mStream=null,pNode=null,sNode=null,chunks=[],recStart=0,lastVoice=0,voiceFrames=0,inRate=48000;
+let voiceOn=false,recording=false,speaking=false,busy=false,speakId=0,playResolve=null,audioUnlocked=false,ttsWarned=false;
+let aCtx=null,mStream=null,pNode=null,sNode=null,chunks=[],recStart=0,lastVoice=0,voiceFrames=0,inRate=48000,noise=0,frameN=0;
 try{voiceOn=localStorage.getItem('brazza_voice')==='1';}catch(e){}
 const player=new Audio();player.preload='auto';
 const MIC_HINT="🎤 Je n'ai pas accès au micro. Autorise-le: Réglages de l'iPhone > Safari > Microphone > Autoriser (ou Demander), puis rouvre l'app. Sur Android, autorise le micro pour Chrome ou pour l'app.";
 
+function setSession(t){try{if(navigator.audioSession)navigator.audioSession.type=t;}catch(e){}}
 function makeSilentWav(){
 const n=800,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
 const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
@@ -111,48 +116,65 @@ for(const p of parts){if((cur+p).length>260&&cur){out.push(cur.trim());cur=p;}el
 if(cur.trim())out.push(cur.trim());
 return out.flatMap(s=>{if(s.length<=330)return [s];const r=[];for(let i=0;i<s.length;i+=300)r.push(s.slice(i,i+300));return r;});
 }
-function fetchTTS(text){
-return fetch(RELAY+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,lang:'fr'})})
-.then(r=>r.json()).then(j=>j.audio||null).catch(()=>null);
+async function fetchTTS(text){
+try{
+const r=await fetch(RELAY+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,lang:'fr'})});
+const j=await r.json();
+if(j.audio)return {url:j.audio};
+return {err:String(j.error||'réponse vide').slice(0,160)};
+}catch(e){return {err:String(e.message||e).slice(0,160)};}
 }
 function playUrl(url){
 return new Promise(res=>{
-playResolve=res;
-player.onended=()=>res();player.onerror=()=>res();
+let done=false;
+const fin=v=>{if(done)return;done=true;playResolve=null;res(v);};
+playResolve=fin;
+player.onended=()=>fin(true);player.onerror=()=>fin(false);
 player.src=url;
-const p=player.play();if(p&&p.catch)p.catch(()=>res());
+const p=player.play();if(p&&p.catch)p.catch(()=>fin(false));
+});
+}
+function browserSpeak(t){
+return new Promise(res=>{
+if(!('speechSynthesis' in window)){res();return;}
+try{
+const u=new SpeechSynthesisUtterance(t);u.lang='fr-FR';
+const vs=speechSynthesis.getVoices();
+const v=vs.find(x=>/^fr[-_]FR/i.test(x.lang))||vs.find(x=>/^fr/i.test(x.lang));
+if(v)u.voice=v;
+u.onend=()=>res();u.onerror=()=>res();
+speechSynthesis.speak(u);
+}catch(e){res();}
 });
 }
 function stopSpeak(){
 speakId++;speaking=false;
 try{player.pause();}catch(e){}
-if(playResolve){const r=playResolve;playResolve=null;r();}
+try{if('speechSynthesis' in window)speechSynthesis.cancel();}catch(e){}
+if(playResolve){const r=playResolve;playResolve=null;r(false);}
 setMicUI();
-}
-function afterSpeak(){
-if(voiceOn&&!recording&&!speaking)setTimeout(()=>{if(voiceOn&&!recording&&!speaking)startRecording();},400);
 }
 async function speakText(html){
 if(!voiceOn)return;
 const t=plain(html).slice(0,1400);
-if(!t){afterSpeak();return;}
+if(!t)return;
 stopSpeak();
-const id=++speakId;speaking=true;setMicUI();
+const id=++speakId;speaking=true;setMicUI();setSession('playback');
 const parts=splitChunks(t);
 let next=fetchTTS(parts[0]);
-let played=0;
+let okCount=0,lastErr='';
 for(let i=0;i<parts.length;i++){
-const url=await next;
+const r=await next;
 if(id!==speakId)return;
 if(i+1<parts.length)next=fetchTTS(parts[i+1]);
-if(!url)continue;
-played++;
-await playUrl(url);
-if(id!==speakId)return;
+let ok=false;
+if(r.url){ok=await playUrl(r.url);if(id!==speakId)return;if(!ok)lastErr='lecture audio bloquée';}
+else lastErr=r.err||'erreur';
+if(ok)okCount++;
+else{await browserSpeak(parts[i]);if(id!==speakId)return;}
 }
 speaking=false;setMicUI();
-if(!played&&!ttsWarned){ttsWarned=true;addMsg("🔇 Ma voix est indisponible pour l'instant (limite du jour ou connexion). Je continue par écrit ndeko!",'bot');}
-afterSpeak();
+if(!okCount&&!ttsWarned){ttsWarned=true;addMsg(`🔇 Ma voix principale ne répond pas pour l'instant, j'utilise la voix du téléphone en attendant.<br><small style='color:#666'>${esc(lastErr).slice(0,160)}</small>`,'bot');}
 }
 
 function bytesToB64(u8){let s='';const k=0x8000;for(let i=0;i<u8.length;i+=k)s+=String.fromCharCode.apply(null,u8.subarray(i,i+k));return btoa(s);}
@@ -174,9 +196,9 @@ return new Uint8Array(buf);
 }
 
 async function startRecording(){
-if(recording)return;
+if(recording||busy)return;
 if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){addMsg(MIC_HINT,'bot');return;}
-stopSpeak();unlockAudio();
+stopSpeak();unlockAudio();setSession('play-and-record');
 try{mStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
 catch(e){mStream=null;addMsg(MIC_HINT,'bot');return;}
 try{
@@ -186,23 +208,25 @@ if(aCtx.state==='suspended')await aCtx.resume();
 inRate=aCtx.sampleRate;
 sNode=aCtx.createMediaStreamSource(mStream);
 pNode=aCtx.createScriptProcessor(4096,1,1);
-chunks=[];voiceFrames=0;recStart=Date.now();lastVoice=Date.now();
+chunks=[];voiceFrames=0;noise=0;frameN=0;recStart=Date.now();lastVoice=Date.now();
 recording=true;
 pNode.onaudioprocess=e=>{
 if(!recording)return;
 const d=e.inputBuffer.getChannelData(0);
 chunks.push(new Float32Array(d));
 let s=0;for(let i=0;i<d.length;i++)s+=d[i]*d[i];
-const rms=Math.sqrt(s/d.length);
-const now=Date.now();
-if(rms>0.025){voiceFrames++;lastVoice=now;}
-if(voiceFrames>=3&&now-lastVoice>1500)stopRecording(true);
-else if(voiceFrames<3&&now-recStart>9000)stopRecording(false);
-else if(now-recStart>30000)stopRecording(true);
+const rms=Math.sqrt(s/d.length),now=Date.now();
+frameN++;
+if(frameN<=4){noise+=rms/4;return;}
+const thr=Math.min(0.08,Math.max(0.03,noise*3.5));
+if(rms>thr){voiceFrames++;lastVoice=now;}
+if(voiceFrames>=5&&now-lastVoice>1500)stopRecording(true);
+else if(voiceFrames<5&&now-recStart>8000)stopRecording(true);
+else if(now-recStart>25000)stopRecording(true);
 };
 sNode.connect(pNode);pNode.connect(aCtx.destination);
 setMicUI();
-typing.style.display='block';typing.textContent="🎤 Je t'écoute... Parle, puis appuie sur le micro rouge (ou attends 1 seconde de silence).";
+typing.style.display='block';typing.textContent="🎤 Je t'écoute... Parle, puis fais une petite pause (ou appuie sur le micro rouge).";
 }catch(e){
 recording=false;
 try{if(mStream)mStream.getTracks().forEach(t=>t.stop());}catch(x){}
@@ -218,13 +242,12 @@ try{if(pNode){pNode.onaudioprocess=null;pNode.disconnect();}if(sNode)sNode.disco
 try{if(mStream)mStream.getTracks().forEach(t=>t.stop());}catch(e){}
 try{if(aCtx)await aCtx.close();}catch(e){}
 pNode=null;sNode=null;mStream=null;aCtx=null;
+setSession('playback');
 setMicUI();typing.style.display='none';
 let total=0;parts.forEach(p=>total+=p.length);
 const dur=total/inRate;
-if(!send||voiceFrames<3||dur<0.6){
-if(send)addMsg("Je n'ai rien entendu ndeko. Appuie sur 🎤 et parle un peu plus fort.",'bot');
-return;
-}
+if(!send)return;
+if(voiceFrames<5||dur<0.8){addMsg("Je n'ai rien entendu ndeko. Appuie sur 🎤 et parle un peu plus fort, près du téléphone.",'bot');return;}
 typing.style.display='block';typing.textContent='📝 Je transcris...';
 let res;
 try{
@@ -235,7 +258,8 @@ res=await r.json();
 typing.style.display='none';
 if(res.error){addMsg(`Je n'arrive pas à t'écouter pour l'instant (limite du jour ou service occupé). Écris ta question, ndeko!<br><small style='color:#666'>${esc(res.error).slice(0,200)}</small>`,'bot');return;}
 const t=(res.text||'').trim();
-if(!t||(HALLU.test(norm(t))&&t.length<70)){addMsg("Je n'ai pas compris ce que tu as dit ndeko. Réessaie avec 🎤.",'bot');return;}
+const weak=!t||t.length<2||HALLU.test(norm(t))||(dur<2.5&&/^\W*(merci|merci beaucoup|au revoir|a bientot|à bientôt)\W*$/i.test(t));
+if(weak){addMsg("Je n'ai pas bien compris ce que tu as dit ndeko. Réessaie avec 🎤, ou écris ta question.",'bot');return;}
 input.value=t;sendBtn.click();
 }
 
@@ -244,7 +268,7 @@ voiceOn=!voiceOn;
 try{localStorage.setItem('brazza_voice',voiceOn?'1':'0');}catch(e){}
 setVmodeUI();unlockAudio();
 if(!voiceOn){stopSpeak();stopRecording(false);return;}
-const hint="Mode vocal activé. Parle-moi après le bip, ou écris ta question. Je te réponds à voix haute.";
+const hint="Mode vocal activé. Appuie sur le micro, parle, et je te réponds à voix haute. Tu peux aussi écrire.";
 addMsg("🎧 "+hint,'bot');
 speakText(hint);
 }
@@ -276,11 +300,11 @@ function transcript(msgs,limit){return msgs.map(m=>(m.role==="user"?"Utilisateur
 function buildSystem(){
 let s=CREATOR_INFO;
 if(notes.length||summary||pending.length){
-s+="\nMÉMOIRE PERSISTANTE (tu t'en souviens d'une conversation à l'autre, même si l'écran est vide):\n";
+s+="\nMÉMOIRE (à utiliser seulement si la question de l'utilisateur y fait référence):\n";
 if(notes.length)s+="Choses que l'utilisateur t'a demandé de retenir:\n"+notes.map(n=>"- "+n).join("\n")+"\n";
-if(summary)s+="Résumé des conversations précédentes:\n"+summary+"\n";
-if(pending.length)s+="Dernière conversation avant celle-ci (pas encore résumée):\n"+transcript(pending.slice(-30),400)+"\n";
-s+="Utilise cette mémoire. Si l'utilisateur te demande quelque chose qu'il t'a déjà dit (son plat préféré, son prénom, ce que tu avais appris...), réponds avec ce que tu as en mémoire. Si on reprend un sujet déjà appris, dis que tu t'en souviens et continue là où vous vous étiez arrêtés, sans recommencer à zéro. Si l'information n'est pas dans ta mémoire, dis-le honnêtement.\n";
+if(summary)s+="Résumé des conversations précédentes:\n"+summary.slice(0,1500)+"\n";
+if(pending.length)s+="Fin de la conversation précédente:\n"+transcript(pending.slice(-8),250)+"\n";
+s+="Si l'utilisateur te demande quelque chose qu'il t'a déjà dit (son plat préféré, son prénom, ce que tu avais appris...), réponds avec ce que tu as en mémoire. Si l'information n'y est pas, dis-le honnêtement. N'évoque pas cette mémoire si on ne t'en parle pas.\n";
 }
 if(voiceOn)s+="\nMODE VOCAL ACTIF: tes réponses sont lues à voix haute. Réponds en 2 à 4 phrases courtes et naturelles, comme à l'oral, sans listes, sans symboles, sans émojis et sans abréviations.\n";
 return s;
@@ -292,9 +316,9 @@ function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;
 
 async function summarize(msgs){
 try{
-const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:"system",content:"Tu tiens la mémoire d'une IA. Fusionne l'ancien résumé et les nouveaux échanges en un seul résumé en français, 1800 caractères maximum. Garde TOUS les faits personnels dits par l'utilisateur (prénom, goûts, plat préféré, famille, projets), les connaissances qu'il t'a enseignées, et où en est la formation en cours. Texte simple, sans markdown, sans introduction."},{role:"user",content:"ANCIEN RÉSUMÉ:\n"+(summary||"(vide)")+"\n\nNOUVEAUX ÉCHANGES:\n"+transcript(msgs,700)}]})});
+const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:[{role:"system",content:"Tu tiens la mémoire d'une IA. Fusionne l'ancien résumé et les nouveaux échanges en un seul résumé en français, 1500 caractères maximum. Garde TOUS les faits personnels dits par l'utilisateur (prénom, goûts, plat préféré, famille, projets), les connaissances qu'il t'a enseignées, et où en est la formation en cours. Ignore les messages sans sens ou les erreurs de transcription. Texte simple, sans markdown, sans introduction."},{role:"user",content:"ANCIEN RÉSUMÉ:\n"+(summary||"(vide)")+"\n\nNOUVEAUX ÉCHANGES:\n"+transcript(msgs,600)}]})});
 const j=await r.json();
-if(j.reply)return j.reply.slice(0,2200);
+if(j.reply)return j.reply.slice(0,1800);
 }catch(e){}
 return null;
 }
@@ -320,7 +344,7 @@ if(notes.length||summary||pending.length){
 addMsg(`Mbote ndeko, content de te revoir! 🙏🇨🇬<br><br>Je me souviens de ce que tu m'as dit avant. Pose-moi une question, ou dis "ma mémoire" pour voir ce que j'ai retenu.<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️.<br>🎧 Active le Mode vocal pour qu'on se parle.`,'bot');
 foldPending();
 }else{
-addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🎧 Active le Mode vocal (bouton en bas) pour qu'on se parle: tu parles avec 🎤 et je réponds à voix haute. Tu peux toujours écrire aussi.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🎧 Active le Mode vocal (bouton en bas): tu appuies sur 🎤, tu parles, et je réponds à voix haute. Tu peux toujours écrire aussi.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
 }
 
 function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
@@ -399,7 +423,7 @@ return `Non ndeko! 😅 Je ne suis PAS ChatGPT! Je suis <b>Brazza AI</b>, créé
 
 history.push({role:"user",content:txt + (userLat? ` [Pos:${userLat},${userLng}]` : '')});
 saveMem();
-let lim=[{role:"system",content:buildSystem()},...history.slice(-30)];
+let lim=[{role:"system",content:buildSystem()},...history.slice(-12)];
 try{
 const r=await fetch(RELAY,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({messages:lim})});
 const j=await r.json();
@@ -419,12 +443,11 @@ micBtn.onclick=()=>{
 unlockAudio();
 if(speaking){stopSpeak();return;}
 if(recording){stopRecording(true);return;}
+if(busy)return;
 startRecording();
 };
 
-sendBtn.onclick=async()=>{
-unlockAudio();if(speaking)stopSpeak();if(recording)stopRecording(false);
-let txt=input.value.trim();if(!txt)return;addMsg(esc(txt),'user');input.value='';
+async function handle(txt){
 let low=norm(txt);
 
 const rm=txt.match(/^\s*(?:retiens|souviens[- ]toi|n['’]oublie pas|mémorise)\s*(?:bien\s*)?(?:que\s*|:\s*)?([\s\S]+)$/i);
@@ -440,7 +463,7 @@ if(low.replace(/[?!. ]/g,'')==='mamémoire'||low.includes('que sais-tu de moi')|
 let m="🧠 Ma mémoire:<br>";
 m+=notes.length?"<br><b>Choses à retenir:</b><br>"+notes.map(n=>"- "+esc(n)).join("<br>"):"<br>Rien noté avec \"Retiens\" pour l'instant.";
 if(summary)m+="<br><br><b>Résumé de nos conversations:</b><br>"+esc(summary);
-if(pending.length)m+="<br><br><b>Dernière conversation (en cours de résumé):</b><br>"+esc(transcript(pending.slice(-10),160)).replace(/\n/g,"<br>");
+if(pending.length)m+="<br><br><b>Fin de la dernière conversation (en cours de résumé):</b><br>"+esc(transcript(pending.slice(-8),160)).replace(/\n/g,"<br>");
 addMsg(m,'bot');
 return;
 }
@@ -459,12 +482,10 @@ return;
 if(pendingImage){
 const img=pendingImage;pendingImage=null;
 await doImage(txt,img);
-afterSpeak();
 return;
 }
 if(IMG_RE.test(low)||IMG_RE2.test(low)){
 await doImage(txt,null);
-afterSpeak();
 return;
 }
 
@@ -484,6 +505,19 @@ return;
 typing.style.display='block';typing.textContent='Brazza AI réfléchit...';
 let a=await callBrain(txt);typing.style.display='none';addMsg(a,'bot');
 speakText(a);
+}
+
+sendBtn.onclick=async()=>{
+unlockAudio();
+if(busy)return;
+if(speaking)stopSpeak();
+if(recording)stopRecording(false);
+const txt=input.value.trim();if(!txt)return;
+busy=true;
+try{
+addMsg(esc(txt),'user');input.value='';
+await handle(txt);
+}finally{busy=false;}
 };
 input.addEventListener('keypress',e=>{if(e.key==='Enter')sendBtn.click();});
 </script>
