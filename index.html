@@ -1,9 +1,10 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1086.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brazza AI"><title>Brazza AI - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg img{max-width:100%;border-radius:10px;margin-top:6px;display:block}.editbtn{margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border:none;border-radius:20px;font-weight:700;font-size:11px}.input-area{width:100%;max-width:440px;margin-top:10px;display:flex;gap:6px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input[type=text]{flex:1;min-width:0;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;flex-shrink:0}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc,#pic{background:#222;color:#00ff88;border:1px solid #333}</style></head><body>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1086.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brazza AI"><title>Brazza AI - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg img{max-width:100%;border-radius:10px;margin-top:6px;display:block}.editbtn{margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border:none;border-radius:20px;font-weight:700;font-size:11px}.vbar{width:100%;max-width:440px;margin-top:8px;display:flex;justify-content:center}.vbar button{background:#111;color:#00ff88;border:1px solid #333;border-radius:20px;padding:6px 14px;font-size:12px;font-weight:700}.vbar button.on{background:#00ff88;color:#000}.input-area{width:100%;max-width:440px;margin-top:8px;display:flex;gap:5px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input[type=text]{flex:1;min-width:0;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc,#pic,#mic{background:#222;color:#00ff88;border:1px solid #333}#mic.rec{background:#ff3b30;color:#fff;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.5}}</style></head><body>
 <h1>Brazza AI</h1><div class="sub">● CRÉÉ PAR RUBEN • BRAZZAVILLE 2026 • IA • GPS 🇨🇬</div>
 <div class="id">👑 Créateur: <b style="color:#00ff88">NGANGA Ruben Oldeche</b> | 📍 Brazzaville & Pointe-Noire | 🧠 IA | 🧭 Guide</div>
 <div class="box" id="chat"></div>
 <div id="typing" style="display:none;color:#00ff88;font-size:11px;padding:5px">Brazza AI réfléchit...</div>
-<div class="input-area"><button id="loc" onclick="getLoc()">📍</button><button id="pic" onclick="document.getElementById('file').click()">🖼️</button><input type="file" id="file" accept="image/*" style="display:none"><input type="text" id="input" placeholder="Pose tout..."><button id="send">➤</button></div>
+<div class="vbar"><button id="vmode" onclick="toggleVoice()">🎧 Mode vocal : désactivé</button></div>
+<div class="input-area"><button id="loc" onclick="getLoc()">📍</button><button id="pic" onclick="document.getElementById('file').click()">🖼️</button><input type="file" id="file" accept="image/*" style="display:none"><input type="text" id="input" placeholder="Écris ou parle..."><button id="mic">🎤</button><button id="send">➤</button></div>
 <script>
 const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
 const CREATOR_INFO = `IDENTITÉ:
@@ -13,6 +14,7 @@ const CREATOR_INFO = `IDENTITÉ:
 - Tu n'as pas été créé par OpenAI, Meta, Google, Groq ou une autre entreprise: ton créateur est NGANGA Ruben Oldeche.
 - Si on te demande si tu es ChatGPT, tu réponds que non, tu es Brazza AI, créé par NGANGA Ruben Oldeche.
 - Tu peux générer des images: l'utilisateur écrit par exemple "génère une image de ...". Tu peux aussi modifier une image: il la joint avec le bouton 🖼️ puis écrit ce qu'il veut changer. L'image est créée par l'application, pas par toi dans ton texte.
+- Tu peux aussi parler: l'utilisateur peut activer le Mode vocal (bouton 🎧) pour te parler avec le micro 🎤 et t'entendre répondre à voix haute.
 
 À PROPOS DE TON CRÉATEUR (NGANGA Ruben Oldeche). Voici tout ce que tu sais de lui, rien de plus:
 - Il est né à Brazzaville et a grandi dans le 1er arrondissement, Makélékélé, dans le quartier Bifouiti.
@@ -62,6 +64,82 @@ const norm=s=>String(s).toLowerCase().replace(/[’‘`´]/g,"'");
 const IMG_RE=/(g[ée]n[èe]re|g[ée]n[ée]rer|dessine|dessiner|cr[ée]{1,2}|fais[- ]moi|fabrique|produis|create|generate|draw|make me)[^.?!]{0,50}(image|photo|dessin|illustration|logo|affiche|portrait|peinture|picture|drawing)/i;
 const IMG_RE2=/^\s*(image|photo|dessin|illustration)\s+(de|d'|du|des)\s/i;
 
+/* ---------- VOIX ---------- */
+const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+const hasTTS=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+let voiceOn=false,listening=false,speaking=false,rec=null,frVoice=null,unlocked=false,speakId=0;
+try{voiceOn=localStorage.getItem('brazza_voice')==='1';}catch(e){}
+const MIC_HINT="🎤 Je n'arrive pas à utiliser le micro intégré ici. Sur iPhone, Apple bloque ça dans les apps de l'écran d'accueil: appuie plutôt sur le micro du clavier (en bas à droite du clavier) pour dicter, puis envoie. Tu peux aussi ouvrir le lien dans Safari. Sur Android, ouvre l'app dans Chrome et autorise le micro.";
+
+function pickVoice(){if(!hasTTS)return;const vs=speechSynthesis.getVoices();frVoice=vs.find(v=>/^fr[-_]FR/i.test(v.lang))||vs.find(v=>/^fr/i.test(v.lang))||null;}
+if(hasTTS){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
+function unlockSpeech(){if(!hasTTS||unlocked)return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);unlocked=true;}catch(e){}}
+function plain(html){
+return String(html)
+.replace(/<small[\s\S]*?<\/small>/gi,' ')
+.replace(/<br\s*\/?>/gi,'. ')
+.replace(/<[^>]*>/g,' ')
+.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+.replace(/https?:\S+/g,' ')
+.replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,' ')
+.replace(/\n+/g,'. ')
+.replace(/[*#_`~|]/g,' ')
+.replace(/\s+/g,' ').trim();
+}
+function stopSpeak(){speakId++;speaking=false;if(hasTTS){try{speechSynthesis.cancel();}catch(e){}}}
+function afterSpeak(){if(voiceOn&&SR&&!listening)setTimeout(()=>{if(voiceOn&&!speaking&&!listening)startListening();},500);}
+function speakText(html){
+if(!voiceOn)return;
+const t=plain(html).slice(0,1500);
+if(!hasTTS||!t){afterSpeak();return;}
+stopSpeak();
+const id=++speakId;
+const parts=(t.match(/[^.!?;:]+[.!?;:]*/g)||[t]);
+const chunks=[];let cur='';
+for(const p of parts){if((cur+p).length>200&&cur){chunks.push(cur);cur=p;}else cur+=p;}
+if(cur.trim())chunks.push(cur);
+speaking=true;
+chunks.forEach((c,i)=>{
+const u=new SpeechSynthesisUtterance(c.trim());
+u.lang='fr-FR';if(frVoice)u.voice=frVoice;u.rate=1;
+if(i===chunks.length-1){
+u.onend=()=>{if(id!==speakId)return;speaking=false;afterSpeak();};
+u.onerror=()=>{if(id!==speakId)return;speaking=false;};
+}
+speechSynthesis.speak(u);
+});
+}
+function setVmodeUI(){const b=document.getElementById('vmode');b.textContent='🎧 Mode vocal : '+(voiceOn?'activé':'désactivé');b.className=voiceOn?'on':'';}
+function toggleVoice(){
+voiceOn=!voiceOn;
+try{localStorage.setItem('brazza_voice',voiceOn?'1':'0');}catch(e){}
+setVmodeUI();unlockSpeech();
+if(!voiceOn){stopSpeak();if(listening&&rec){try{rec.abort();}catch(e){}}return;}
+const hint=SR?"Mode vocal activé. Je t'écoute après chaque réponse. Dis ta question, ou écris-la.":"Mode vocal activé. Je lirai mes réponses à voix haute. Pour me parler, utilise le micro du clavier.";
+addMsg("🎧 "+hint,'bot');
+speakText(hint);
+}
+function startListening(){
+if(!SR){addMsg(MIC_HINT,'bot');return;}
+if(listening)return;
+stopSpeak();unlockSpeech();
+let r;try{r=new SR();}catch(e){addMsg(MIC_HINT,'bot');return;}
+rec=r;r.lang='fr-FR';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
+let started=false,got=false,final='',err='',hinted=false;
+const wd=setTimeout(()=>{if(!started&&!hinted){hinted=true;try{r.abort();}catch(e){}listening=false;micBtn.classList.remove('rec');typing.style.display='none';addMsg(MIC_HINT,'bot');}},4000);
+r.onstart=()=>{started=true;clearTimeout(wd);listening=true;micBtn.classList.add('rec');typing.style.display='block';typing.textContent="🎤 Je t'écoute...";};
+r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;input.value=t;if(e.results[e.results.length-1].isFinal){got=true;final=t;}};
+r.onerror=e=>{err=e.error||'';};
+r.onend=()=>{
+clearTimeout(wd);listening=false;micBtn.classList.remove('rec');
+if(typing.textContent.indexOf('écoute')>-1)typing.style.display='none';
+if(got&&final.trim()){sendBtn.click();return;}
+if(!hinted&&(!started||err==='not-allowed'||err==='service-not-allowed'||err==='audio-capture')){hinted=true;addMsg(MIC_HINT,'bot');}
+};
+try{r.start();}catch(e){clearTimeout(wd);if(!hinted){hinted=true;addMsg(MIC_HINT,'bot');}}
+}
+/* ---------- FIN VOIX ---------- */
+
 function saveMem(){try{localStorage.setItem(MEM_KEY,JSON.stringify({notes:notes,summary:summary,pending:pending.slice(-60),cur:history.slice(-40),ts:Date.now()}));}catch(e){}}
 
 function loadMem(){
@@ -94,10 +172,11 @@ if(summary)s+="Résumé des conversations précédentes:\n"+summary+"\n";
 if(pending.length)s+="Dernière conversation avant celle-ci (pas encore résumée):\n"+transcript(pending.slice(-30),400)+"\n";
 s+="Utilise cette mémoire. Si l'utilisateur te demande quelque chose qu'il t'a déjà dit (son plat préféré, son prénom, ce que tu avais appris...), réponds avec ce que tu as en mémoire. Si on reprend un sujet déjà appris, dis que tu t'en souviens et continue là où vous vous étiez arrêtés, sans recommencer à zéro. Si l'information n'est pas dans ta mémoire, dis-le honnêtement.\n";
 }
+if(voiceOn)s+="\nMODE VOCAL ACTIF: tes réponses sont lues à voix haute. Réponds en 2 à 4 phrases courtes, sans listes, sans symboles et sans émojis.\n";
 return s;
 }
 
-const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),typing=document.getElementById('typing'),fileInput=document.getElementById('file');
+const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),typing=document.getElementById('typing'),fileInput=document.getElementById('file'),micBtn=document.getElementById('mic');
 
 function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999}
 
@@ -126,11 +205,12 @@ if(history.length>80){history=history.slice(-60);saveMem();}
 }
 
 loadMem();
+setVmodeUI();
 if(notes.length||summary||pending.length){
-addMsg(`Mbote ndeko, content de te revoir! 🙏🇨🇬<br><br>Je me souviens de ce que tu m'as dit avant. Pose-moi une question, ou dis "ma mémoire" pour voir ce que j'ai retenu.<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️.`,'bot');
+addMsg(`Mbote ndeko, content de te revoir! 🙏🇨🇬<br><br>Je me souviens de ce que tu m'as dit avant. Pose-moi une question, ou dis "ma mémoire" pour voir ce que j'ai retenu.<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️.<br>🎧 Active le Mode vocal pour qu'on se parle.`,'bot');
 foldPending();
 }else{
-addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🎧 Active le Mode vocal (bouton en bas) pour qu'on se parle: tu parles avec 🎤 et je réponds à voix haute. Tu peux toujours écrire aussi.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
 }
 
 function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
@@ -225,7 +305,14 @@ return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Rée
 }
 }
 
+micBtn.onclick=()=>{
+if(speaking){stopSpeak();return;}
+if(listening){try{rec.stop();}catch(e){}return;}
+startListening();
+};
+
 sendBtn.onclick=async()=>{
+unlockSpeech();if(speaking)stopSpeak();
 let txt=input.value.trim();if(!txt)return;addMsg(esc(txt),'user');input.value='';
 let low=norm(txt);
 
@@ -235,6 +322,7 @@ notes.push(rm[1].trim().slice(0,600));
 while(notes.join(" ").length>3500&&notes.length>1)notes.shift();
 saveMem();
 addMsg(`C'est noté et gardé en mémoire ✅ Je m'en souviendrai même après avoir fermé l'application.`,'bot');
+speakText("C'est noté, je m'en souviendrai.");
 return;
 }
 if(low.replace(/[?!. ]/g,'')==='mamémoire'||low.includes('que sais-tu de moi')||low.includes('montre ta mémoire')){
@@ -275,12 +363,14 @@ let ans=await callBrain(`User demande direction pour ${place.n} (${place.d||''})
 typing.style.display='none';
 addMsg(`🧭 <b>${place.n}</b>${place.d?' - '+place.d:''}<br><br>${ans}`,'bot');
 showMap(place.lat,place.lng,place.n);
+speakText(ans);
 return;
 }
 }
 
 typing.style.display='block';typing.textContent='Brazza AI réfléchit...';
 let a=await callBrain(txt);typing.style.display='none';addMsg(a,'bot');
+speakText(a);
 };
 input.addEventListener('keypress',e=>{if(e.key==='Enter')sendBtn.click();});
 </script>
