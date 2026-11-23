@@ -63,17 +63,28 @@ const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const norm=s=>String(s).toLowerCase().replace(/[’‘`´]/g,"'");
 const IMG_RE=/(g[ée]n[èe]re|g[ée]n[ée]rer|dessine|dessiner|cr[ée]{1,2}|fais[- ]moi|fabrique|produis|create|generate|draw|make me)[^.?!]{0,50}(image|photo|dessin|illustration|logo|affiche|portrait|peinture|picture|drawing)/i;
 const IMG_RE2=/^\s*(image|photo|dessin|illustration)\s+(de|d'|du|des)\s/i;
+const HALLU=/sous-titr|merci d'avoir regard|abonne|amara\.org|n'oubliez pas/i;
 
-/* ---------- VOIX ---------- */
-const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-const hasTTS=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
-let voiceOn=false,listening=false,speaking=false,rec=null,frVoice=null,unlocked=false,speakId=0;
+/* ---------- VOIX (écoute et voix par le serveur) ---------- */
+let voiceOn=false,recording=false,speaking=false,speakId=0,playResolve=null,audioUnlocked=false,ttsWarned=false;
+let aCtx=null,mStream=null,pNode=null,sNode=null,chunks=[],recStart=0,lastVoice=0,voiceFrames=0,inRate=48000;
 try{voiceOn=localStorage.getItem('brazza_voice')==='1';}catch(e){}
-const MIC_HINT="🎤 Je n'arrive pas à utiliser le micro intégré ici. Sur iPhone, Apple bloque ça dans les apps de l'écran d'accueil: appuie plutôt sur le micro du clavier (en bas à droite du clavier) pour dicter, puis envoie. Tu peux aussi ouvrir le lien dans Safari. Sur Android, ouvre l'app dans Chrome et autorise le micro.";
+const player=new Audio();player.preload='auto';
+const MIC_HINT="🎤 Je n'ai pas accès au micro. Autorise-le: Réglages de l'iPhone > Safari > Microphone > Autoriser (ou Demander), puis rouvre l'app. Sur Android, autorise le micro pour Chrome ou pour l'app.";
 
-function pickVoice(){if(!hasTTS)return;const vs=speechSynthesis.getVoices();frVoice=vs.find(v=>/^fr[-_]FR/i.test(v.lang))||vs.find(v=>/^fr/i.test(v.lang))||null;}
-if(hasTTS){pickVoice();speechSynthesis.onvoiceschanged=pickVoice;}
-function unlockSpeech(){if(!hasTTS||unlocked)return;try{const u=new SpeechSynthesisUtterance(' ');u.volume=0;speechSynthesis.speak(u);unlocked=true;}catch(e){}}
+function makeSilentWav(){
+const n=800,buf=new ArrayBuffer(44+n*2),v=new DataView(buf);
+const w=(o,s)=>{for(let i=0;i<s.length;i++)v.setUint8(o+i,s.charCodeAt(i));};
+w(0,'RIFF');v.setUint32(4,36+n*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,8000,true);v.setUint32(28,16000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,n*2,true);
+return URL.createObjectURL(new Blob([buf],{type:'audio/wav'}));
+}
+function unlockAudio(){
+if(audioUnlocked)return;
+try{player.src=makeSilentWav();const p=player.play();if(p&&p.catch)p.catch(()=>{});audioUnlocked=true;}catch(e){}
+}
+function setMicUI(){micBtn.classList.toggle('rec',recording);micBtn.textContent=speaking?'⏹':'🎤';}
+function setVmodeUI(){const b=document.getElementById('vmode');b.textContent='🎧 Mode vocal : '+(voiceOn?'activé':'désactivé');b.className=voiceOn?'on':'';}
+
 function plain(html){
 return String(html)
 .replace(/<small[\s\S]*?<\/small>/gi,' ')
@@ -82,61 +93,160 @@ return String(html)
 .replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
 .replace(/https?:\S+/g,' ')
 .replace(/[\u{1F000}-\u{1FFFF}\u{2600}-\u{27BF}\u{FE0F}\u{200D}]/gu,' ')
+.replace(/\bBrazza AI\b/g,'Brazza A I')
+.replace(/\bAI\b/g,'A I').replace(/\bIA\b/g,'I A')
+.replace(/\bFCFA\b/g,'francs C F A').replace(/\bXAF\b/g,'francs C F A')
+.replace(/&/g,' et ').replace(/%/g,' pour cent')
 .replace(/\n+/g,'. ')
-.replace(/[*#_`~|]/g,' ')
-.replace(/\s+/g,' ').trim();
+.replace(/\.{2,}/g,'.')
+.replace(/[*#_`~|<>(){}\[\]\/\\]/g,' ')
+.replace(/[:;]/g,', ')
+.replace(/(^|\. )-\s+/g,'$1')
+.replace(/\s+/g,' ').replace(/(\.\s*){2,}/g,'. ').trim();
 }
-function stopSpeak(){speakId++;speaking=false;if(hasTTS){try{speechSynthesis.cancel();}catch(e){}}}
-function afterSpeak(){if(voiceOn&&SR&&!listening)setTimeout(()=>{if(voiceOn&&!speaking&&!listening)startListening();},500);}
-function speakText(html){
-if(!voiceOn)return;
-const t=plain(html).slice(0,1500);
-if(!hasTTS||!t){afterSpeak();return;}
-stopSpeak();
-const id=++speakId;
-const parts=(t.match(/[^.!?;:]+[.!?;:]*/g)||[t]);
-const chunks=[];let cur='';
-for(const p of parts){if((cur+p).length>200&&cur){chunks.push(cur);cur=p;}else cur+=p;}
-if(cur.trim())chunks.push(cur);
-speaking=true;
-chunks.forEach((c,i)=>{
-const u=new SpeechSynthesisUtterance(c.trim());
-u.lang='fr-FR';if(frVoice)u.voice=frVoice;u.rate=1;
-if(i===chunks.length-1){
-u.onend=()=>{if(id!==speakId)return;speaking=false;afterSpeak();};
-u.onerror=()=>{if(id!==speakId)return;speaking=false;};
+function splitChunks(t){
+const parts=t.match(/[^.!?]+[.!?]*/g)||[t];
+const out=[];let cur='';
+for(const p of parts){if((cur+p).length>260&&cur){out.push(cur.trim());cur=p;}else cur+=p;}
+if(cur.trim())out.push(cur.trim());
+return out.flatMap(s=>{if(s.length<=330)return [s];const r=[];for(let i=0;i<s.length;i+=300)r.push(s.slice(i,i+300));return r;});
 }
-speechSynthesis.speak(u);
+function fetchTTS(text){
+return fetch(RELAY+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text,lang:'fr'})})
+.then(r=>r.json()).then(j=>j.audio||null).catch(()=>null);
+}
+function playUrl(url){
+return new Promise(res=>{
+playResolve=res;
+player.onended=()=>res();player.onerror=()=>res();
+player.src=url;
+const p=player.play();if(p&&p.catch)p.catch(()=>res());
 });
 }
-function setVmodeUI(){const b=document.getElementById('vmode');b.textContent='🎧 Mode vocal : '+(voiceOn?'activé':'désactivé');b.className=voiceOn?'on':'';}
+function stopSpeak(){
+speakId++;speaking=false;
+try{player.pause();}catch(e){}
+if(playResolve){const r=playResolve;playResolve=null;r();}
+setMicUI();
+}
+function afterSpeak(){
+if(voiceOn&&!recording&&!speaking)setTimeout(()=>{if(voiceOn&&!recording&&!speaking)startRecording();},400);
+}
+async function speakText(html){
+if(!voiceOn)return;
+const t=plain(html).slice(0,1400);
+if(!t){afterSpeak();return;}
+stopSpeak();
+const id=++speakId;speaking=true;setMicUI();
+const parts=splitChunks(t);
+let next=fetchTTS(parts[0]);
+let played=0;
+for(let i=0;i<parts.length;i++){
+const url=await next;
+if(id!==speakId)return;
+if(i+1<parts.length)next=fetchTTS(parts[i+1]);
+if(!url)continue;
+played++;
+await playUrl(url);
+if(id!==speakId)return;
+}
+speaking=false;setMicUI();
+if(!played&&!ttsWarned){ttsWarned=true;addMsg("🔇 Ma voix est indisponible pour l'instant (limite du jour ou connexion). Je continue par écrit ndeko!",'bot');}
+afterSpeak();
+}
+
+function bytesToB64(u8){let s='';const k=0x8000;for(let i=0;i<u8.length;i+=k)s+=String.fromCharCode.apply(null,u8.subarray(i,i+k));return btoa(s);}
+function encodeWav16k(parts,rate){
+let len=0;parts.forEach(p=>len+=p.length);
+const all=new Float32Array(len);let o=0;parts.forEach(p=>{all.set(p,o);o+=p.length;});
+const ratio=rate/16000,outLen=Math.floor(all.length/ratio);
+const pcm=new Int16Array(outLen);
+for(let i=0;i<outLen;i++){
+const a=Math.floor(i*ratio),b=Math.min(all.length,Math.floor((i+1)*ratio));
+let s=0,c=0;for(let j=a;j<b;j++){s+=all[j];c++;}
+let x=c?s/c:0;x=Math.max(-1,Math.min(1,x));pcm[i]=x<0?x*32768:x*32767;
+}
+const buf=new ArrayBuffer(44+pcm.length*2),v=new DataView(buf);
+const w=(p,s)=>{for(let i=0;i<s.length;i++)v.setUint8(p+i,s.charCodeAt(i));};
+w(0,'RIFF');v.setUint32(4,36+pcm.length*2,true);w(8,'WAVE');w(12,'fmt ');v.setUint32(16,16,true);v.setUint16(20,1,true);v.setUint16(22,1,true);v.setUint32(24,16000,true);v.setUint32(28,32000,true);v.setUint16(32,2,true);v.setUint16(34,16,true);w(36,'data');v.setUint32(40,pcm.length*2,true);
+new Int16Array(buf,44).set(pcm);
+return new Uint8Array(buf);
+}
+
+async function startRecording(){
+if(recording)return;
+if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){addMsg(MIC_HINT,'bot');return;}
+stopSpeak();unlockAudio();
+try{mStream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}});}
+catch(e){mStream=null;addMsg(MIC_HINT,'bot');return;}
+try{
+const AC=window.AudioContext||window.webkitAudioContext;
+aCtx=new AC();
+if(aCtx.state==='suspended')await aCtx.resume();
+inRate=aCtx.sampleRate;
+sNode=aCtx.createMediaStreamSource(mStream);
+pNode=aCtx.createScriptProcessor(4096,1,1);
+chunks=[];voiceFrames=0;recStart=Date.now();lastVoice=Date.now();
+recording=true;
+pNode.onaudioprocess=e=>{
+if(!recording)return;
+const d=e.inputBuffer.getChannelData(0);
+chunks.push(new Float32Array(d));
+let s=0;for(let i=0;i<d.length;i++)s+=d[i]*d[i];
+const rms=Math.sqrt(s/d.length);
+const now=Date.now();
+if(rms>0.025){voiceFrames++;lastVoice=now;}
+if(voiceFrames>=3&&now-lastVoice>1500)stopRecording(true);
+else if(voiceFrames<3&&now-recStart>9000)stopRecording(false);
+else if(now-recStart>30000)stopRecording(true);
+};
+sNode.connect(pNode);pNode.connect(aCtx.destination);
+setMicUI();
+typing.style.display='block';typing.textContent="🎤 Je t'écoute... Parle, puis appuie sur le micro rouge (ou attends 1 seconde de silence).";
+}catch(e){
+recording=false;
+try{if(mStream)mStream.getTracks().forEach(t=>t.stop());}catch(x){}
+addMsg("Je n'arrive pas à démarrer l'écoute sur ce téléphone ndeko. Tu peux utiliser le micro du clavier pour dicter.<br><small style='color:#666'>"+esc(e.message||e)+"</small>",'bot');
+}
+}
+
+async function stopRecording(send){
+if(!recording)return;
+recording=false;
+const parts=chunks;chunks=[];
+try{if(pNode){pNode.onaudioprocess=null;pNode.disconnect();}if(sNode)sNode.disconnect();}catch(e){}
+try{if(mStream)mStream.getTracks().forEach(t=>t.stop());}catch(e){}
+try{if(aCtx)await aCtx.close();}catch(e){}
+pNode=null;sNode=null;mStream=null;aCtx=null;
+setMicUI();typing.style.display='none';
+let total=0;parts.forEach(p=>total+=p.length);
+const dur=total/inRate;
+if(!send||voiceFrames<3||dur<0.6){
+if(send)addMsg("Je n'ai rien entendu ndeko. Appuie sur 🎤 et parle un peu plus fort.",'bot');
+return;
+}
+typing.style.display='block';typing.textContent='📝 Je transcris...';
+let res;
+try{
+const wav=encodeWav16k(parts,inRate);
+const r=await fetch(RELAY+'/stt',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({audio:bytesToB64(wav),language:'fr'})});
+res=await r.json();
+}catch(e){res={error:String(e.message||e)};}
+typing.style.display='none';
+if(res.error){addMsg(`Je n'arrive pas à t'écouter pour l'instant (limite du jour ou service occupé). Écris ta question, ndeko!<br><small style='color:#666'>${esc(res.error).slice(0,200)}</small>`,'bot');return;}
+const t=(res.text||'').trim();
+if(!t||(HALLU.test(norm(t))&&t.length<70)){addMsg("Je n'ai pas compris ce que tu as dit ndeko. Réessaie avec 🎤.",'bot');return;}
+input.value=t;sendBtn.click();
+}
+
 function toggleVoice(){
 voiceOn=!voiceOn;
 try{localStorage.setItem('brazza_voice',voiceOn?'1':'0');}catch(e){}
-setVmodeUI();unlockSpeech();
-if(!voiceOn){stopSpeak();if(listening&&rec){try{rec.abort();}catch(e){}}return;}
-const hint=SR?"Mode vocal activé. Je t'écoute après chaque réponse. Dis ta question, ou écris-la.":"Mode vocal activé. Je lirai mes réponses à voix haute. Pour me parler, utilise le micro du clavier.";
+setVmodeUI();unlockAudio();
+if(!voiceOn){stopSpeak();stopRecording(false);return;}
+const hint="Mode vocal activé. Parle-moi après le bip, ou écris ta question. Je te réponds à voix haute.";
 addMsg("🎧 "+hint,'bot');
 speakText(hint);
-}
-function startListening(){
-if(!SR){addMsg(MIC_HINT,'bot');return;}
-if(listening)return;
-stopSpeak();unlockSpeech();
-let r;try{r=new SR();}catch(e){addMsg(MIC_HINT,'bot');return;}
-rec=r;r.lang='fr-FR';r.interimResults=true;r.continuous=false;r.maxAlternatives=1;
-let started=false,got=false,final='',err='',hinted=false;
-const wd=setTimeout(()=>{if(!started&&!hinted){hinted=true;try{r.abort();}catch(e){}listening=false;micBtn.classList.remove('rec');typing.style.display='none';addMsg(MIC_HINT,'bot');}},4000);
-r.onstart=()=>{started=true;clearTimeout(wd);listening=true;micBtn.classList.add('rec');typing.style.display='block';typing.textContent="🎤 Je t'écoute...";};
-r.onresult=e=>{let t='';for(let i=0;i<e.results.length;i++)t+=e.results[i][0].transcript;input.value=t;if(e.results[e.results.length-1].isFinal){got=true;final=t;}};
-r.onerror=e=>{err=e.error||'';};
-r.onend=()=>{
-clearTimeout(wd);listening=false;micBtn.classList.remove('rec');
-if(typing.textContent.indexOf('écoute')>-1)typing.style.display='none';
-if(got&&final.trim()){sendBtn.click();return;}
-if(!hinted&&(!started||err==='not-allowed'||err==='service-not-allowed'||err==='audio-capture')){hinted=true;addMsg(MIC_HINT,'bot');}
-};
-try{r.start();}catch(e){clearTimeout(wd);if(!hinted){hinted=true;addMsg(MIC_HINT,'bot');}}
 }
 /* ---------- FIN VOIX ---------- */
 
@@ -172,7 +282,7 @@ if(summary)s+="Résumé des conversations précédentes:\n"+summary+"\n";
 if(pending.length)s+="Dernière conversation avant celle-ci (pas encore résumée):\n"+transcript(pending.slice(-30),400)+"\n";
 s+="Utilise cette mémoire. Si l'utilisateur te demande quelque chose qu'il t'a déjà dit (son plat préféré, son prénom, ce que tu avais appris...), réponds avec ce que tu as en mémoire. Si on reprend un sujet déjà appris, dis que tu t'en souviens et continue là où vous vous étiez arrêtés, sans recommencer à zéro. Si l'information n'est pas dans ta mémoire, dis-le honnêtement.\n";
 }
-if(voiceOn)s+="\nMODE VOCAL ACTIF: tes réponses sont lues à voix haute. Réponds en 2 à 4 phrases courtes, sans listes, sans symboles et sans émojis.\n";
+if(voiceOn)s+="\nMODE VOCAL ACTIF: tes réponses sont lues à voix haute. Réponds en 2 à 4 phrases courtes et naturelles, comme à l'oral, sans listes, sans symboles, sans émojis et sans abréviations.\n";
 return s;
 }
 
@@ -306,13 +416,14 @@ return "Yeh ndeko, mon cerveau est fatigué (limite atteinte ou connexion). Rée
 }
 
 micBtn.onclick=()=>{
+unlockAudio();
 if(speaking){stopSpeak();return;}
-if(listening){try{rec.stop();}catch(e){}return;}
-startListening();
+if(recording){stopRecording(true);return;}
+startRecording();
 };
 
 sendBtn.onclick=async()=>{
-unlockSpeech();if(speaking)stopSpeak();
+unlockAudio();if(speaking)stopSpeak();if(recording)stopRecording(false);
 let txt=input.value.trim();if(!txt)return;addMsg(esc(txt),'user');input.value='';
 let low=norm(txt);
 
@@ -348,10 +459,12 @@ return;
 if(pendingImage){
 const img=pendingImage;pendingImage=null;
 await doImage(txt,img);
+afterSpeak();
 return;
 }
 if(IMG_RE.test(low)||IMG_RE2.test(low)){
 await doImage(txt,null);
+afterSpeak();
 return;
 }
 
