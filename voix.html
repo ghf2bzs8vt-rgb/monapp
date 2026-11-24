@@ -1,0 +1,55 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Test voix</title>
+<style>body{background:#000;color:#fff;font-family:-apple-system,sans-serif;padding:16px}button{display:block;width:100%;margin:10px 0;padding:14px;border:none;border-radius:12px;background:#00ff88;font-size:16px;font-weight:700}pre{white-space:pre-wrap;background:#111;padding:10px;border-radius:10px;font-size:14px}</style></head><body>
+<h2>Test de la voix</h2>
+<p>Coupe le mode silencieux (interrupteur sur le côté) et monte le volume.</p>
+<button id="b1">1. Tester le relais et la voix</button>
+<button id="b2">2. Tester la voix du téléphone</button>
+<pre id="out">Prêt.</pre>
+<script>
+const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
+const out=document.getElementById('out');
+const log=s=>{out.textContent+="\n"+s;};
+try{if(navigator.audioSession)navigator.audioSession.type='playback';}catch(e){}
+document.getElementById('b1').onclick=async()=>{
+out.textContent="Test du relais...";
+const p=new Audio("data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=");
+try{p.play().catch(()=>{});}catch(e){}
+let r,txt;
+try{
+r=await fetch(RELAY+'/tts',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:"Bonjour, je suis Brazza A I. Ceci est un test de ma voix.",lang:'fr'})});
+txt=await r.text();
+}catch(e){log("ERREUR de réseau: "+e.message);return;}
+log("Réponse du relais: HTTP "+r.status);
+let j;
+try{j=JSON.parse(txt);}catch(e){log("Réponse illisible: "+txt.slice(0,200));return;}
+if(j.error){
+log("Erreur du relais: "+j.error);
+if(j.error==="Message vide")log("=> CAUSE: le relais n'est PAS à jour (il ne connaît pas la voix). Vérifie Cloudflare > Deployments.");
+else if(/Accès refusé/i.test(j.error))log("=> CAUSE: ouvre cette page depuis le lien ghf2bzs8vt-rgb.github.io/monapp/voix.html.");
+else if(/undefined|AI\b|run/i.test(j.error))log("=> CAUSE: l'IA n'est pas branchée au relais (fichier wrangler.jsonc).");
+else log("=> CAUSE probable: limite du jour atteinte ou service occupé.");
+return;
+}
+if(!j.audio){log("Pas d'audio reçu: "+txt.slice(0,200));return;}
+log("Audio reçu: "+Math.round(j.audio.length/1024)+" Ko. Lecture...");
+p.src=j.audio;
+p.onended=()=>log("Lecture terminée.");
+p.onerror=()=>log("ERREUR de lecture audio (format non lisible).");
+try{await p.play();log("Lecture démarrée. Tu dois entendre la voix. Sinon: volume ou mode silencieux.");}
+catch(e){log("Lecture refusée par le téléphone: "+e.name+" "+e.message);}
+};
+document.getElementById('b2').onclick=()=>{
+out.textContent="Test de la voix du téléphone...";
+if(!('speechSynthesis' in window)){log("Pas de voix intégrée sur ce téléphone.");return;}
+const vs=speechSynthesis.getVoices();
+log("Voix françaises trouvées: "+(vs.filter(v=>/^fr/i.test(v.lang)).map(v=>v.name+" ("+v.lang+")").join(", ")||"aucune"));
+const u=new SpeechSynthesisUtterance("Bonjour, ceci est un test de la voix du téléphone.");
+u.lang='fr-FR';
+const v=vs.find(x=>/^fr[-_]FR/i.test(x.lang));
+if(v)u.voice=v;
+u.onend=()=>log("Terminé.");
+u.onerror=e=>log("Erreur: "+e.error);
+speechSynthesis.speak(u);
+log("Lecture demandée.");
+};
+</script></body></html>
