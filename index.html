@@ -1,12 +1,14 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1086.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brazza AI"><title>Brazza AI - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:10px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:58vh;min-height:340px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg img{max-width:100%;border-radius:10px;margin-top:6px;display:block}.editbtn{margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border:none;border-radius:20px;font-weight:700;font-size:11px}.vbar{width:100%;max-width:440px;margin-top:8px;display:flex;justify-content:center;gap:8px}.vbar button{background:#111;color:#00ff88;border:1px solid #333;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700}.vbar button.on{background:#00ff88;color:#000}.input-area{width:100%;max-width:440px;margin-top:8px;display:flex;gap:5px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input[type=text]{flex:1;min-width:0;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc,#pic,#mic{background:#222;color:#00ff88;border:1px solid #333}#mic.rec{background:#ff3b30;color:#fff;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.5}}</style></head><body>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><link rel="manifest" href="manifest.json"><link rel="apple-touch-icon" href="IMG_1086.png"><meta name="theme-color" content="#4DB8FF"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Brazza AI"><title>Brazza AI - Créé par RUBEN</title><link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/><script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script><style>*{margin:0;padding:0;box-sizing:border-box;font-family:-apple-system,sans-serif}body{background:#000;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:10px}h1{font-size:23px;font-weight:900;margin-top:10px;background:linear-gradient(90deg,#00ff88,#00d4ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;text-align:center}.sub{color:#00ff88;font-size:9px;letter-spacing:1px}.id{width:100%;max-width:440px;background:linear-gradient(90deg,#00ff8822,#00d4ff22);border:1px solid #00ff8833;border-radius:10px;padding:6px 10px;margin-top:8px;font-size:10px;text-align:center;color:#888}.tbar{width:100%;max-width:440px;margin-top:8px;display:flex;justify-content:flex-end}.tbar button{background:#111;color:#00ff88;border:1px solid #333;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700}.box{width:100%;max-width:440px;background:#0f0f0f;border-radius:18px;margin-top:8px;padding:10px;flex:1;display:flex;flex-direction:column;gap:8px;border:1px solid #1f1f1f;overflow-y:auto;max-height:56vh;min-height:320px}.msg{padding:10px 12px;border-radius:16px;font-size:13.5px;line-height:1.5;max-width:88%;white-space:pre-wrap;word-break:break-word}.msg.bot{background:#1a1a1a;align-self:flex-start;border:1px solid #222}.msg.user{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;align-self:flex-end;font-weight:600}.msg img{max-width:100%;border-radius:10px;margin-top:6px;display:block}.editbtn{margin-top:6px;padding:7px 12px;background:#00ff88;color:#000;border:none;border-radius:20px;font-weight:700;font-size:11px}.acts{white-space:normal;margin-top:8px;display:flex;gap:6px;flex-wrap:wrap}.actbtn{background:#222;color:#00ff88;border:1px solid #333;border-radius:14px;padding:5px 10px;font-size:11px;font-weight:700;text-decoration:none;display:inline-block}.vbar{width:100%;max-width:440px;margin-top:8px;display:flex;justify-content:center;gap:8px}.vbar button{background:#111;color:#00ff88;border:1px solid #333;border-radius:20px;padding:6px 12px;font-size:12px;font-weight:700}.vbar button.on{background:#00ff88;color:#000}.input-area{width:100%;max-width:440px;margin-top:8px;display:flex;gap:5px;background:#111;padding:8px;border-radius:30px;border:1px solid #222;align-items:center}.input-area input[type=text]{flex:1;min-width:0;background:transparent;border:none;color:#fff;outline:none;padding:8px;font-size:14px}.input-area button{border:none;width:38px;height:38px;border-radius:50%;cursor:pointer;flex-shrink:0}#send{background:linear-gradient(135deg,#00ff88,#00d4ff);color:#000;font-weight:900}#loc,#pic,#mic{background:#222;color:#00ff88;border:1px solid #333}#mic.rec{background:#ff3b30;color:#fff;animation:pulse 1s infinite}@keyframes pulse{50%{opacity:.5}}</style></head><body>
 <h1>Brazza AI</h1><div class="sub">● CRÉÉ PAR RUBEN • BRAZZAVILLE 2026 • IA • GPS 🇨🇬</div>
 <div class="id">👑 Créateur: <b style="color:#00ff88">NGANGA Ruben Oldeche</b> | 📍 Brazzaville & Pointe-Noire | 🧠 IA | 🧭 Guide</div>
+<div class="tbar"><button id="newchat" onclick="newChat()">➕ Nouvelle discussion</button></div>
 <div class="box" id="chat"></div>
 <div id="typing" style="display:none;color:#00ff88;font-size:11px;padding:5px">Brazza AI réfléchit...</div>
 <div class="vbar"><button id="vmode" onclick="toggleVoice()">🎧 Mode vocal : désactivé</button><button id="vchg" onclick="changeVoice()">🗣️ Voix</button></div>
 <div class="input-area"><button id="loc" onclick="getLoc()">📍</button><button id="pic" onclick="document.getElementById('file').click()">🖼️</button><input type="file" id="file" accept="image/*" style="display:none"><input type="text" id="input" placeholder="Écris ou parle..."><button id="mic">🎤</button><button id="send">➤</button></div>
 <script>
 const RELAY="https://siri-ya-brazza.z4t59vhyht.workers.dev";
+const APP_URL="https://ghf2bzs8vt-rgb.github.io/monapp/";
 const CREATOR_INFO = `RÈGLE D'OR (la plus importante):
 - Réponds UNIQUEMENT à la question posée, de façon directe, claire et ordonnée.
 - Ne parle JAMAIS de ton créateur, de ton nom, de l'histoire du Congo ni de tes fonctions (images, voix, mémoire) si on ne te le demande pas. Pas de salutation répétée, pas de remarque hors sujet.
@@ -19,7 +21,7 @@ IDENTITÉ:
 - Quand on te demande qui t'a créé ou qui est ton créateur, tu donnes son nom complet (NGANGA Ruben Oldeche) puis tu le présentes en 2 ou 3 phrases avec les informations ci-dessous.
 - Tu n'as pas été créé par OpenAI, Meta, Google, Groq ou une autre entreprise: ton créateur est NGANGA Ruben Oldeche.
 - Si on te demande si tu es ChatGPT, tu réponds que non, tu es Brazza AI, créé par NGANGA Ruben Oldeche.
-- Fonctions (à mentionner seulement si on te le demande): images (l'utilisateur écrit "génère une image de ..." ou joint une photo avec 🖼️), mode vocal (bouton 🎧, micro 🎤), mémoire ("Retiens: ...").
+- Fonctions (à mentionner seulement si on te le demande): images (l'utilisateur écrit "génère une image de ..." ou joint une photo avec 🖼️), mode vocal (bouton 🎧, micro 🎤), mémoire ("Retiens: ..."), nouvelle discussion (bouton ➕), copier et partager une réponse sur WhatsApp (boutons sous chaque réponse).
 
 À PROPOS DE TON CRÉATEUR (NGANGA Ruben Oldeche). Voici tout ce que tu sais de lui, rien de plus:
 - Il est né à Brazzaville et a grandi dans le 1er arrondissement, Makélékélé, dans le quartier Bifouiti.
@@ -63,6 +65,7 @@ let userLat=null,userLng=null;
 const MEM_KEY="brazza_ai_mem_v2";
 let notes=[],summary="",pending=[],history=[];
 let pendingImage=null,imgN=0;const images={};
+let actN=0;const acts={};
 const esc=s=>String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
 const norm=s=>String(s).toLowerCase().replace(/[’‘`´]/g,"'");
 const sleep=ms=>new Promise(r=>setTimeout(r,ms));
@@ -312,7 +315,50 @@ return s;
 
 const chat=document.getElementById('chat'),input=document.getElementById('input'),sendBtn=document.getElementById('send'),typing=document.getElementById('typing'),fileInput=document.getElementById('file'),micBtn=document.getElementById('mic');
 
-function addMsg(t,w){const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;chat.appendChild(d);chat.scrollTop=9999}
+function htmlToText(h){
+return String(h)
+.replace(/<small[\s\S]*?<\/small>/gi,'')
+.replace(/<br\s*\/?>/gi,'\n')
+.replace(/<[^>]*>/g,'')
+.replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&')
+.replace(/\n{3,}/g,'\n\n').trim();
+}
+function addMsg(t,w,actions){
+const d=document.createElement('div');d.className='msg '+w;d.innerHTML=t;
+if(actions){
+const id='a'+(++actN);
+acts[id]=htmlToText(t);
+const wa='https://wa.me/?text='+encodeURIComponent(acts[id].slice(0,3000)+"\n\n— Brazza AI 🇨🇬 "+APP_URL);
+const bar=document.createElement('div');bar.className='acts';
+bar.innerHTML='<button class="actbtn" onclick="copyAct(\''+id+'\',this)">📋 Copier</button><a class="actbtn" href="'+wa+'" target="_blank" rel="noopener">🟢 WhatsApp</a>';
+d.appendChild(bar);
+}
+chat.appendChild(d);chat.scrollTop=9999;
+}
+async function copyAct(id,btn){
+const text=acts[id]||'';
+let ok=false;
+try{await navigator.clipboard.writeText(text);ok=true;}catch(e){}
+if(!ok){
+try{
+const ta=document.createElement('textarea');ta.value=text;ta.style.position='fixed';ta.style.opacity='0';
+document.body.appendChild(ta);ta.focus();ta.select();ta.setSelectionRange(0,text.length);
+ok=document.execCommand('copy');document.body.removeChild(ta);
+}catch(e){}
+}
+const old=btn.textContent;btn.textContent=ok?'✅ Copié':'❌ Échec';
+setTimeout(()=>{btn.textContent=old;},1500);
+}
+function newChat(){
+if(busy)return;
+stopSpeak();if(recording)stopRecording(false);
+pendingImage=null;
+if(history.length)pending=pending.concat(history).slice(-60);
+history=[];saveMem();
+chat.innerHTML='';
+addMsg(`✅ Nouvelle discussion. Je garde en mémoire ce que tu m'as dit avant. Écris ta question!`,'bot');
+foldPending();
+}
 
 async function summarize(msgs){
 try{
@@ -341,10 +387,10 @@ if(history.length>80){history=history.slice(-60);saveMem();}
 loadMem();
 setVmodeUI();
 if(notes.length||summary||pending.length){
-addMsg(`Mbote ndeko, content de te revoir! 🙏🇨🇬<br><br>Je me souviens de ce que tu m'as dit avant. Pose-moi une question, ou dis "ma mémoire" pour voir ce que j'ai retenu.<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️.<br>🎧 Active le Mode vocal pour qu'on se parle.`,'bot');
+addMsg(`Mbote ndeko, content de te revoir! 🙏🇨🇬<br><br>Je me souviens de ce que tu m'as dit avant. Pose-moi une question, ou dis "ma mémoire" pour voir ce que j'ai retenu.<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️.<br>🎧 Active le Mode vocal pour qu'on se parle.<br>📋 Sous mes réponses: copier ou partager sur WhatsApp.`,'bot');
 foldPending();
 }else{
-addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🎧 Active le Mode vocal (bouton en bas): tu appuies sur 🎤, tu parles, et je réponds à voix haute. Bouton 🗣️ pour changer ma voix. Tu peux toujours écrire aussi.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
+addMsg(`Mbote ndeko! 🙏🇨🇬<br><br>Je suis <b>Brazza AI</b>, créé par <b style="color:#00ff88">NGANGA Ruben Oldeche</b> à Brazzaville en 2026!<br><br>🧠 Pose-moi tes questions: maths, code, histoire, business, lingala!<br>🧠 Je garde en mémoire ce que tu me dis, même après avoir fermé l'app. Pour être sûr que je retienne: "Retiens: ..."<br>🎨 Pour une image: "génère une image de ...". Pour modifier une photo: appuie sur 🖼️ puis écris ce que tu veux changer.<br>🎧 Active le Mode vocal (bouton en bas): tu appuies sur 🎤, tu parles, et je réponds à voix haute. Bouton 🗣️ pour changer ma voix. Tu peux toujours écrire aussi.<br>📋 Sous mes réponses: copier ou partager sur WhatsApp. Bouton ➕ pour une nouvelle discussion.<br>🧭 Je connais Brazzaville et Pointe-Noire + GPS!<br><br>Teste-moi: demande "Qui t'a créé?" 😎`,'bot');
 }
 
 function getLoc(){if(!navigator.geolocation)return;typing.style.display='block';typing.textContent='📍 Localisation...';navigator.geolocation.getCurrentPosition(p=>{userLat=p.coords.latitude;userLng=p.coords.longitude;typing.style.display='none';addMsg(`📍 Position activée: ${userLat.toFixed(4)}, ${userLng.toFixed(4)} ✅<br>Maintenant je peux te guider partout!`,'bot');},()=>{typing.style.display='none';addMsg('Active GPS dans réglages Safari ndeko','bot');});}
@@ -495,7 +541,7 @@ if(place){
 typing.style.display='block';typing.textContent='🧭 Je cherche...';
 let ans=await callBrain(`User demande direction pour ${place.n} (${place.d||''}) à ${place.lat},${place.lng}. Donne itinéraire détaillé style taximan brazzavillois avec repères, quartiers traversés, prix taxi, durée. Précise que les prix et durées sont approximatifs. User pos: ${userLat},${userLng}`);
 typing.style.display='none';
-addMsg(`🧭 <b>${place.n}</b>${place.d?' - '+place.d:''}<br><br>${ans}`,'bot');
+addMsg(`🧭 <b>${place.n}</b>${place.d?' - '+place.d:''}<br><br>${ans}`,'bot',!/^Yeh ndeko/.test(ans));
 showMap(place.lat,place.lng,place.n);
 speakText(ans);
 return;
@@ -503,7 +549,8 @@ return;
 }
 
 typing.style.display='block';typing.textContent='Brazza AI réfléchit...';
-let a=await callBrain(txt);typing.style.display='none';addMsg(a,'bot');
+let a=await callBrain(txt);typing.style.display='none';
+addMsg(a,'bot',!/^Yeh ndeko/.test(a));
 speakText(a);
 }
 
