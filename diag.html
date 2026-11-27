@@ -1,0 +1,26 @@
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Diagnostic</title>
+<style>body{background:#000;color:#fff;font-family:-apple-system,sans-serif;padding:16px}pre{white-space:pre-wrap;background:#111;padding:10px;border-radius:10px;font-size:13px}button{width:100%;padding:14px;border:none;border-radius:12px;background:#00ff88;font-size:16px;font-weight:700;margin:10px 0}</style></head><body>
+<h2>Diagnostic de l'app</h2>
+<button id="b">Lancer le diagnostic</button>
+<pre id="o">Prêt.</pre>
+<script>
+const o=document.getElementById('o');
+const log=s=>{o.textContent+="\n"+s;};
+document.getElementById('b').onclick=async()=>{
+o.textContent="Lecture de index.html...";
+let t;
+try{const r=await fetch('index.html?nocache='+Date.now(),{cache:'no-store'});log("HTTP "+r.status);t=await r.text();}catch(e){log("ERREUR réseau: "+e.message);return;}
+log("Taille: "+t.length+" caractères");
+log("Se termine par la balise html: "+(/<\/html>\s*$/i.test(t)?"OUI":"NON (fichier coupé)"));
+log("Début: "+t.slice(0,60).replace(/\n/g,' '));
+log("Fin: "+t.slice(-60).replace(/\n/g,' '));
+const re=/<script(?![^>]*\ssrc)[^>]*>([\s\S]*?)<\/script>/gi;
+let m,n=0,bad=0;
+while((m=re.exec(t))){
+n++;
+try{new Function(m[1]);log("Script "+n+": syntaxe OK ("+m[1].length+" caractères)");}
+catch(e){bad++;log("Script "+n+": ERREUR de syntaxe: "+e.message);}
+}
+log(bad?"=> CAUSE: le code collé contient une erreur ou est incomplet.":"=> La syntaxe est bonne. Le problème est ailleurs (réseau ou cache).");
+};
+</script></body></html>
